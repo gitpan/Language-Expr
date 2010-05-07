@@ -1,0 +1,106 @@
+NAME
+    Language::Expr - Simple minilanguage for use in expression
+
+VERSION
+    version 0.01
+
+SYNOPSIS
+        use Language::Expr;
+        my $le = new Language::Expr;
+        $le->var('a' => 1, 'b' => 2);
+        $le->func(sqr => sub { $_[0] ** 2 }, rand => sub {rand()});
+        say $le->eval('$a + sqr($b)'); # 5
+
+DESCRIPTION
+    Language::Expr defines a simple, Perl-like expression minilanguage. It
+    supports mathematical and string operators, arrays, hashes, variables,
+    and functions. See Language::Expr::Manual::Syntax for description of the
+    language syntax.
+
+    The language is very simple. The parser is just around 120 lines long.
+    There is no predefined variables or functions or even many of the
+    semantics.
+
+    This distribution consists of the language parser
+    (Language::Expr::Parser) and the interpreter
+    (Language::Expr::Interpreter).
+
+    The parser is used by other modules such as Data::Template::Expr and
+    Data::Schema, to provide support for expressions. In the latter case,
+    the expressions are converted into Perl, PHP, and JavaScript.
+
+ATTRIBUTES
+  interpreter
+    The Language::Expr::Interpreter instance.
+
+METHODS
+  new()
+    Construct a new Language::Expr object.
+
+  var(NAME => VALUE, ...)
+    Define variables.
+
+  func(NAME => CODEREF, ...)
+    Define functions. Dies if function is defined multiple times.
+
+  eval(STR) => RESULT
+    Evaluate expression in STR and return the result. Will die if there is a
+    parsing or runtime error.
+
+FAQ
+  Why yet another simplistic (restricted, etc) language? Why not just Perl?
+    When first adding expression support to Data::Schema, I want a language
+    that is simple enough so I can easily convert it to Perl, PHP,
+    JavaScript, and others. I do not need a fully-fledged programming
+    language (in fact, Expr is not even Turing-complete, it does not support
+    assignment or loops). Instead, I just need some basic stuffs like
+    mathematical/string/logical operators, arrays, hashes, and functions.
+    This language will mostly be used inside templates and schemas.
+
+  Why don't you use Language::Farnsworth, or Math::Expression, or Math::Expression::Evaluator, or $FOO?
+    I need a parser separate from the interpreter, because in different
+    applications I need a different set of functions and different
+    semantics. In Data::Schema, I also need to use the parser to emit code
+    for other languages.
+
+    The language is simple enough that it's much easier to just create my
+    own parser instead of trying to fit the abovementioned modules for my
+    needs.
+
+  I want different syntax for (variables, foo operator, etc)!
+    Create your own language :-) Fork this distribution and start modifying
+    the Language::Expr::Parser module.
+
+  The parser is too slow!
+    I personally am not having problem with performance. In fact,
+    Regexp::Grammmars should be much faster than Parse::RecDescent. If you
+    need faster parsing speed you can take a look at reimplementing the
+    parser using Parse::Yapp, Parse::Eyapp, etc.
+
+  How to show details of errors in expression?
+    This is a TODO item.
+
+BUGS
+    Due to possible bugs in Perl's RE engine or Regexp::Grammars or my
+    grammar, some syntax errors will cause further parsing to fail. Variable
+    interpolation inside double quoted strings also doesn't work yet
+    (segfaults).
+
+SEE ALSO
+    Syntax reference: Language::Expr::Manual::Syntax
+
+    Modules that are using Language::Expr: Data::Schema,
+    Data::Template::Expr.
+
+    Other related modules: Math::Expression, Math::Expression::Evaluator,
+    Language::Farnsworth
+
+AUTHOR
+      Steven Haryanto <stevenharyanto@gmail.com>
+
+COPYRIGHT AND LICENSE
+    This software is copyright (c) 2010 by Steven Haryanto.
+
+    This is free software; you can redistribute it and/or modify it under
+    the same terms as the Perl 5 programming language system itself.
+

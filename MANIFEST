@@ -1,0 +1,15 @@
+Changes
+LICENSE
+MANIFEST
+META.yml
+README
+dist.ini
+lib/Language/Expr.pm
+lib/Language/Expr/Interpreter.pm
+lib/Language/Expr/InterpreterRole.pm
+lib/Language/Expr/Manual/Syntax.pod
+lib/Language/Expr/Parser.pm
+t/00-load.t
+t/eval.t
+t/release-pod-coverage.t
+t/release-pod-syntax.t
