@@ -1,6 +1,6 @@
 package Language::Expr::InterpreterRole;
 BEGIN {
-  $Language::Expr::InterpreterRole::VERSION = '0.01';
+  $Language::Expr::InterpreterRole::VERSION = '0.02';
 }
 # ABSTRACT: Specification for Language::Expr exprression interpreter
 
@@ -28,6 +28,7 @@ requires 'rule_var';
 requires 'rule_func';
 requires 'rule_bool';
 requires 'rule_num';
+requires 'rule_preprocess';
 requires 'rule_postprocess';
 
 no Any::Moose;
@@ -42,7 +43,7 @@ Language::Expr::InterpreterRole - Specification for Language::Expr exprression i
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 AUTHOR
 

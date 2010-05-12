@@ -2,14 +2,19 @@ NAME
     Language::Expr - Simple minilanguage for use in expression
 
 VERSION
-    version 0.01
+    version 0.02
 
 SYNOPSIS
         use Language::Expr;
         my $le = new Language::Expr;
         $le->var('a' => 1, 'b' => 2);
         $le->func(sqr => sub { $_[0] ** 2 }, rand => sub {rand()});
+
+        # evaluate expression
         say $le->eval('$a + sqr($b)'); # 5
+
+        # enumerate variables
+        say $le->enum_vars('$a*$a + sqr($b)'); # ['a', 'b']
 
 DESCRIPTION
     Language::Expr defines a simple, Perl-like expression minilanguage. It
@@ -33,6 +38,9 @@ ATTRIBUTES
   interpreter
     The Language::Expr::Interpreter instance.
 
+  varenumer
+    The Language::Expr::VarEnumer instance.
+
 METHODS
   new()
     Construct a new Language::Expr object.
@@ -46,6 +54,10 @@ METHODS
   eval(STR) => RESULT
     Evaluate expression in STR and return the result. Will die if there is a
     parsing or runtime error.
+
+  enum_vars(STR) => ARRAYREF
+    Enumerate variables mentioned in expression STR. Return empty arrayref
+    if no variables are mentioned.
 
 FAQ
   Why yet another simplistic (restricted, etc) language? Why not just Perl?

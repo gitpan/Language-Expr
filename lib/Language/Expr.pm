@@ -1,6 +1,6 @@
 package Language::Expr;
 BEGIN {
-  $Language::Expr::VERSION = '0.01';
+  $Language::Expr::VERSION = '0.02';
 }
 # ABSTRACT: Simple minilanguage for use in expression
 
@@ -8,10 +8,14 @@ BEGIN {
 use Any::Moose;
 use Language::Expr::Parser;
 use Language::Expr::Interpreter;
+use Language::Expr::VarEnumer;
 
 
 
 has interpreter => (is => 'ro', default => sub { Language::Expr::Interpreter->new });
+
+
+has varenumer => (is => 'ro', default => sub { Language::Expr::VarEnumer->new });
 
 
 
@@ -40,6 +44,14 @@ sub eval {
 }
 
 
+sub enum_vars {
+    my ($self, $str) = @_;
+    my $v = $self->varenumer;
+    Language::Expr::Parser::parse_expr($str, $v);
+    $v->result;
+}
+
+
 
 1;
 
@@ -52,7 +64,7 @@ Language::Expr - Simple minilanguage for use in expression
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 SYNOPSIS
 
@@ -60,7 +72,12 @@ version 0.01
     my $le = new Language::Expr;
     $le->var('a' => 1, 'b' => 2);
     $le->func(sqr => sub { $_[0] ** 2 }, rand => sub {rand()});
+
+    # evaluate expression
     say $le->eval('$a + sqr($b)'); # 5
+
+    # enumerate variables
+    say $le->enum_vars('$a*$a + sqr($b)'); # ['a', 'b']
 
 =head1 DESCRIPTION
 
@@ -87,6 +104,10 @@ case, the expressions are converted into Perl, PHP, and JavaScript.
 
 The Language::Expr::Interpreter instance.
 
+=head2 varenumer
+
+The Language::Expr::VarEnumer instance.
+
 =head1 METHODS
 
 =head2 new()
@@ -105,6 +126,11 @@ Define functions. Dies if function is defined multiple times.
 
 Evaluate expression in STR and return the result. Will die if there is
 a parsing or runtime error.
+
+=head2 enum_vars(STR) => ARRAYREF
+
+Enumerate variables mentioned in expression STR. Return empty arrayref
+ if no variables are mentioned.
 
 =head1 FAQ
 

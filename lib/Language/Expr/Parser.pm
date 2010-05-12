@@ -1,6 +1,6 @@
 package Language::Expr::Parser;
 BEGIN {
-  $Language::Expr::Parser::VERSION = '0.01';
+  $Language::Expr::Parser::VERSION = '0.02';
 }
 # ABSTRACT: Parse Language::Expr expression
 
@@ -13,7 +13,7 @@ sub parse_expr {
     my ($str, $obj_arg) = @_;
 
     use Regexp::Grammars;
-    state $obj; # not thread-safe!
+    state $obj; # WARN: this is not thread-safe!?
     state $grammar = qr{
         ^<answer>$
 
@@ -160,6 +160,7 @@ sub parse_expr {
     }xms;
 
     $obj = $obj_arg;
+    $obj_arg->rule_preprocess(string_ref => \$str);
     die "Invalid syntax in expression `$str`" unless $str =~ $grammar;
     $obj_arg->rule_postprocess(result => $/{answer});
 }
@@ -175,7 +176,7 @@ Language::Expr::Parser - Parse Language::Expr expression
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 FUNCTIONS
 

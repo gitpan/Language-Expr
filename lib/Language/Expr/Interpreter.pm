@@ -1,12 +1,11 @@
 package Language::Expr::Interpreter;
 BEGIN {
-  $Language::Expr::Interpreter::VERSION = '0.01';
+  $Language::Expr::Interpreter::VERSION = '0.02';
 }
 # A default interpreter for Language::Expr
 
 use Any::Moose;
 with 'Language::Expr::InterpreterRole';
-use feature 'state';
 use List::Util 'reduce';
 
 
@@ -271,6 +270,9 @@ sub rule_func {
     }
 }
 
+sub rule_preprocess {
+}
+
 sub rule_postprocess {
     my ($self, %args) = @_;
     my $result = $args{result};
@@ -290,7 +292,7 @@ Language::Expr::Interpreter
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 ATTRIBUTES
 

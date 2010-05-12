@@ -1,5 +1,6 @@
 # just to make PodWeaver happy at the moment
 package Language::Expr::Manual::Syntax;
+# ABSTRACT: Language::Expr::Manual::Syntax - Description of the Language::Expr language
 
 
 __END__
@@ -7,18 +8,18 @@ __END__
 
 =head1 NAME
 
-Language::Expr::Manual::Syntax
+Language::Expr::Manual::Syntax - Language::Expr::Manual::Syntax - Description of the Language::Expr language
 
 =head1 VERSION
 
-version 0.01
+version 0.02
 
 =head1 OVERVIEW
 
 Language::Expr language is very simple. It has just enough features to
 support mathematical/logical/string operations, arrays, hashes,
-variables, and function calls. It does not any predefined variables or
-builtin functions.
+variables, and function calls. It does not define any predefined
+variables or builtin functions.
 
 Language::Expr is (intentionally) not Turing-complete (lacks
 assignment and loops).
@@ -27,14 +28,6 @@ It should be trivial to implement an interpreter or code generator
 from the parser. In fact, Language::Expr is meant to be easily
 convertible to Perl, PHP, and Javascript (among others like Python and
 Ruby).
-
-=head1 NAME
-
-Language::Expr::Manual::Syntax - Description of the Language::Expr language
-
-=head1 VERSION
-
-version 0.01
 
 =head1 LITERALS
 
@@ -190,8 +183,6 @@ Examples:
 Difference from Perl: parentheses are required.
 
 The language does not define list of known functions.
-
-=cut
 
 =head1 AUTHOR
 
