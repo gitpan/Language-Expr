@@ -2,7 +2,7 @@ NAME
     Language::Expr - Simple minilanguage for use in expression
 
 VERSION
-    version 0.02
+    version 0.03
 
 SYNOPSIS
         use Language::Expr;
@@ -23,8 +23,6 @@ DESCRIPTION
     language syntax.
 
     The language is very simple. The parser is just around 120 lines long.
-    There is no predefined variables or functions or even many of the
-    semantics.
 
     This distribution consists of the language parser
     (Language::Expr::Parser) and the interpreter

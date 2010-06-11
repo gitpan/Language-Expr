@@ -1,6 +1,6 @@
 package Language::Expr::Interpreter;
 BEGIN {
-  $Language::Expr::Interpreter::VERSION = '0.02';
+  $Language::Expr::Interpreter::VERSION = '0.03';
 }
 # A default interpreter for Language::Expr
 
@@ -13,6 +13,9 @@ has vars  => (is => 'rw', default => sub { {} });
 
 
 has funcs => (is => 'rw', default => sub { {} });
+
+
+has level => (is => 'rw', default => 0);
 
 
 
@@ -270,6 +273,57 @@ sub rule_func {
     }
 }
 
+sub _map_grep_usort {
+    my ($which, $self, %args) = @_;
+    my $match = $args{match};
+    my $ary = $match->{array};
+    my $expr = $match->{expr};
+    die "Second argument to map/grep/usort must be an array"
+        unless ref($ary) eq 'ARRAY';
+    local $self->{level} = $self->{level}+1;
+    print "DEBUG: _map_grep_usort: level=$self->{level}, expr=`$expr`, array=[".join(",", @$ary),"]\n";
+    my $res;
+    if ($which eq 'map') {
+        $res = [];
+        local $self->{vars}{_};
+        for (@$ary) {
+            $self->{vars}{_} = $_;
+            push @$res, Language::Expr::Parser::parse_expr($expr, $self,
+                                                           $self->level);
+            push @$res, $_;
+        }
+    } elsif ($which eq 'grep') {
+        local $self->{vars}{_};
+        $res = [ grep {
+            $self->{vars}{_} = $_;
+            $self->Language::Expr::Parser::parse_expr($expr, $self,
+                                                      $self->level)
+        } @$ary];
+    } elsif ($which eq 'usort') {
+        local $self->{vars}{a};
+        local $self->{vars}{b};
+        $res = [ sort {
+            $self->{vars}{a} = $a;
+            $self->{vars}{b} = $b;
+            Language::Expr::Parser::parse_expr($expr, $self,
+                                               $self->level)
+        } @$ary];
+    }
+    $res;
+}
+
+sub rule_func_map {
+    _map_grep_usort('map', @_);
+}
+
+sub rule_func_grep {
+    _map_grep_usort('grep', @_);
+}
+
+sub rule_func_usort {
+    _map_grep_usort('usort', @_);
+}
+
 sub rule_preprocess {
 }
 
@@ -292,7 +346,7 @@ Language::Expr::Interpreter
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 ATTRIBUTES
 
@@ -303,6 +357,10 @@ Store variables.
 =head2 funcs => {NAME => CODEREF, ...}
 
 List known functions.
+
+=head2 level => INT
+
+Current recursion level.
 
 =head2 METHODS
 

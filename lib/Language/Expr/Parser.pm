@@ -1,20 +1,35 @@
 package Language::Expr::Parser;
 BEGIN {
-  $Language::Expr::Parser::VERSION = '0.02';
+  $Language::Expr::Parser::VERSION = '0.03';
 }
 # ABSTRACT: Parse Language::Expr expression
 
 use feature 'state';
-use strict;
-use warnings;
+# now can't compile with this on?
+#use strict;
+#use warnings;
+
+my $MAX_LEVELS = 3;
 
 
 sub parse_expr {
-    my ($str, $obj_arg) = @_;
+    my ($str, $obj_arg, $level) = @_;
+
+    $level //= 0;
+    die "Recursion level ($level) too deep (max $MAX_LEVELS)" if $level >= $MAX_LEVELS;
 
     use Regexp::Grammars;
-    state $obj; # WARN: this is not thread-safe!?
-    state $grammar = qr{
+
+    # WARN: this is not thread-safe!?
+    state $obj;
+    local $subexpr_stack = [];
+
+    # create not just 1 but 0..$MAX_LEVELS-1 of grammar objects, each
+    # for each recursion level (e.g. for map/grep/usort), fearing that
+    # the grammar is not reentrant. but currently no luck yet, still
+    # results in segfault/bus error.
+
+    state $grammars = [ map { qr{
         ^<answer>$
 
         <rule: answer>
@@ -154,14 +169,18 @@ sub parse_expr {
         <rule: func>
             <func_name=([A-Za-z_]\w*)> \( \)
             (?{ $MATCH = $obj->rule_func(match=>{func_name=>$MATCH{func_name}, args=>[]}) })
+          | <func_name=(map|grep|usort)> \( \{ <expr=answer> \} (?{ push @$subexpr_stack, $CONTEXT; }), <input_array=answer> \)
+            (?{ my $meth = "rule_func_$MATCH{func_name}";
+                $MATCH = $obj->$meth(match=>{expr=>pop(@$subexpr_stack), array=>$MATCH{input_array}}) })
           | <func_name=([A-Za-z_]\w*)> \( <[args=answer]> ** (,) \)
             (?{ $MATCH = $obj->rule_func(match=>%MATCH) })
 
-    }xms;
+    }xms } 0..($MAX_LEVELS-1)];
 
     $obj = $obj_arg;
-    $obj_arg->rule_preprocess(string_ref => \$str);
-    die "Invalid syntax in expression `$str`" unless $str =~ $grammar;
+    $obj_arg->rule_preprocess(string_ref => \$str, level => $level);
+    #print "DEBUG: Parsing expression `$str` with grammars->[$level] ...\n";
+    die "Invalid syntax in expression `$str`" unless $str =~ $grammars->[$level];
     $obj_arg->rule_postprocess(result => $/{answer});
 }
 
@@ -176,9 +195,9 @@ Language::Expr::Parser - Parse Language::Expr expression
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
-=head1 FUNCTIONS
+=head1 METHODS
 
 =head2 parse_expr($str, $obj)
 

@@ -1,6 +1,6 @@
 package Language::Expr::InterpreterRole;
 BEGIN {
-  $Language::Expr::InterpreterRole::VERSION = '0.02';
+  $Language::Expr::InterpreterRole::VERSION = '0.03';
 }
 # ABSTRACT: Specification for Language::Expr exprression interpreter
 
@@ -26,6 +26,9 @@ requires 'rule_squotestr';
 requires 'rule_dquotestr';
 requires 'rule_var';
 requires 'rule_func';
+requires 'rule_func_map';
+requires 'rule_func_grep';
+requires 'rule_func_usort';
 requires 'rule_bool';
 requires 'rule_num';
 requires 'rule_preprocess';
@@ -43,7 +46,7 @@ Language::Expr::InterpreterRole - Specification for Language::Expr exprression i
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 AUTHOR
 

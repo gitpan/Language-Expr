@@ -1,16 +1,16 @@
 package Language::Expr::VarEnumer;
 BEGIN {
-  $Language::Expr::VarEnumer::VERSION = '0.02';
+  $Language::Expr::VarEnumer::VERSION = '0.03';
 }
 # Enumerate variables mentioned in Language::Expr expression
 
 use Any::Moose;
 with 'Language::Expr::InterpreterRole';
 
+require Language::Expr::Parser;
+
 
 has result => (is => 'rw');
-
-
 
 
 
@@ -75,6 +75,18 @@ sub rule_var {
 
 sub rule_func { }
 
+sub rule_func_map {
+    die "Subexpression not yet supported";
+}
+
+sub rule_func_grep {
+    die "Subexpression not yet supported";
+}
+
+sub rule_func_usort {
+    die "Subexpression not yet supported";
+}
+
 sub rule_preprocess {
     my ($self, %args) = @_;
     $self->result([]);
@@ -96,7 +108,7 @@ Language::Expr::VarEnumer
 
 =head1 VERSION
 
-version 0.02
+version 0.03
 
 =head1 ATTRIBUTES
 
