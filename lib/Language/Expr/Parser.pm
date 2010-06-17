@@ -1,6 +1,6 @@
 package Language::Expr::Parser;
 BEGIN {
-  $Language::Expr::Parser::VERSION = '0.03';
+  $Language::Expr::Parser::VERSION = '0.04';
 }
 # ABSTRACT: Parse Language::Expr expression
 
@@ -58,24 +58,23 @@ sub parse_expr {
 
 # precedence level  6: left     &
         <rule: bit_and>
-            <[operand=equal]> ** <[op=(&)]>
+            <[operand=comparison3]> ** <[op=(&)]>
             (?{ $MATCH = $obj->rule_bit_and(match=>%MATCH) })
 
-# precedence level  7: nonassoc == != <=> eq ne cmp
-        <rule: equal>
-            # \x3c = "<", \x3e = ">"
-            <[operand=less_greater]> ** <[op=(==|!=|\x3c=\x3e|eq|ne|cmp)]>
-            (?{ $MATCH = $obj->rule_equal(match=>%MATCH) })
+            # NOTE: \x3c = "<", \x3e = ">"
 
-# precedence level  8: nonassoc < > <= >= lt gt le ge
-        <rule: less_greater>
-            # \x3c = "<", \x3e = ">"
-            <[operand=bit_shift]> ** <[op=(\x3c=?|\x3e=?|lt|gt|le|ge)]>
-            (?{ $MATCH = $obj->rule_less_greater(match=>%MATCH) })
+# precedence level  7: nonassoc (currently the grammar says assoc) <=> cmp
+        <rule: comparison3>
+            <[operand=comparison]> ** <[op=(\x3c=\x3e|cmp)]>
+            (?{ $MATCH = $obj->rule_comparison3(match=>%MATCH) })
+
+# precedence level  8: left == != eq ne < > <= >= ge gt le lt
+        <rule: comparison>
+            <[operand=bit_shift]> ** <[op=(==|!=|eq|ne|\x3c=?|\x3e=?|lt|gt|le|ge)]>
+            (?{ $MATCH = $obj->rule_comparison(match=>%MATCH) })
 
 # precedence level  9: left     << >>
         <rule: bit_shift>
-            # \x3c = "<", \x3e = ">"
             <[operand=add]> ** <[op=(\x3c\x3c|\x3e\x3e)]>
             (?{ $MATCH = $obj->rule_bit_shift(match=>%MATCH) })
 
@@ -96,12 +95,12 @@ sub parse_expr {
 
 # precedence level 13: right    **
         <rule: power>
-            <[operand=subscripting]> ** <op=(\*\*)>
+            <[operand=subscripting]> ** <[op=(\*\*)]>
             (?{ $MATCH = $obj->rule_power(match=>%MATCH) })
 
 # precedence level 14: left    hash[s], array[i]
         <rule: subscripting>
-            <[operand=term]> <[subscript]>*
+            <operand=term> <[subscript]>*
             (?{ $MATCH = $obj->rule_subscripting(match=>%MATCH) })
 
         <rule: subscript>
@@ -109,15 +108,16 @@ sub parse_expr {
 
 # precedence level 15: left     term (variable, str/num literals, func(), (paren))
         <rule: term>
-              <MATCH=func>
-            | <MATCH=var0>
-            | <MATCH=str0>
-            | <MATCH=undef>
-            | <MATCH=num0>
-            | <MATCH=bool0>
-            | <MATCH=array>
-            | <MATCH=hash>
-            | \( <MATCH=answer> \)
+            <MATCH=func>
+          | <MATCH=var0>
+          | <MATCH=str0>
+          | <MATCH=undef>
+          | <MATCH=num0>
+          | <MATCH=bool0>
+          | <MATCH=array>
+          | <MATCH=hash>
+          | \( <answer> \)
+            (?{ $MATCH = $obj->rule_parenthesis(match=>%MATCH) // $MATCH{answer} })
 
         <rule: array>
             \[ \]
@@ -178,10 +178,10 @@ sub parse_expr {
     }xms } 0..($MAX_LEVELS-1)];
 
     $obj = $obj_arg;
-    $obj_arg->rule_preprocess(string_ref => \$str, level => $level);
+    $obj_arg->expr_preprocess(string_ref => \$str, level => $level);
     #print "DEBUG: Parsing expression `$str` with grammars->[$level] ...\n";
     die "Invalid syntax in expression `$str`" unless $str =~ $grammars->[$level];
-    $obj_arg->rule_postprocess(result => $/{answer});
+    $obj_arg->expr_postprocess(result => $/{answer});
 }
 
 1;
@@ -195,7 +195,7 @@ Language::Expr::Parser - Parse Language::Expr expression
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 METHODS
 

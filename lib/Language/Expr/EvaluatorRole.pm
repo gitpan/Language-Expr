@@ -1,8 +1,8 @@
-package Language::Expr::InterpreterRole;
+package Language::Expr::EvaluatorRole;
 BEGIN {
-  $Language::Expr::InterpreterRole::VERSION = '0.03';
+  $Language::Expr::EvaluatorRole::VERSION = '0.04';
 }
-# ABSTRACT: Specification for Language::Expr exprression interpreter
+# ABSTRACT: Specification for Language::Expr interpreter/compiler
 
 use Any::Moose '::Role';
 
@@ -11,8 +11,8 @@ requires 'rule_or_xor';
 requires 'rule_and';
 requires 'rule_bit_or_xor';
 requires 'rule_bit_and';
-requires 'rule_equal';
-requires 'rule_less_greater';
+requires 'rule_comparison3';
+requires 'rule_comparison';
 requires 'rule_bit_shift';
 requires 'rule_add';
 requires 'rule_mult';
@@ -31,8 +31,9 @@ requires 'rule_func_grep';
 requires 'rule_func_usort';
 requires 'rule_bool';
 requires 'rule_num';
-requires 'rule_preprocess';
-requires 'rule_postprocess';
+requires 'rule_parenthesis';
+requires 'expr_preprocess';
+requires 'expr_postprocess';
 
 no Any::Moose;
 1;
@@ -42,11 +43,11 @@ __END__
 
 =head1 NAME
 
-Language::Expr::InterpreterRole - Specification for Language::Expr exprression interpreter
+Language::Expr::EvaluatorRole - Specification for Language::Expr interpreter/compiler
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 AUTHOR
 

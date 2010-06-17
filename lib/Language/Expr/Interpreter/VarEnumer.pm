@@ -1,13 +1,12 @@
-package Language::Expr::VarEnumer;
+package Language::Expr::Interpreter::VarEnumer;
 BEGIN {
-  $Language::Expr::VarEnumer::VERSION = '0.03';
+  $Language::Expr::Interpreter::VarEnumer::VERSION = '0.04';
 }
 # Enumerate variables mentioned in Language::Expr expression
 
 use Any::Moose;
-with 'Language::Expr::InterpreterRole';
-
-require Language::Expr::Parser;
+with 'Language::Expr::EvaluatorRole';
+extends 'Language::Expr::Evaluator';
 
 
 has result => (is => 'rw');
@@ -29,9 +28,9 @@ sub rule_bit_or_xor { }
 
 sub rule_bit_and { }
 
-sub rule_equal { }
+sub rule_comparison3 { }
 
-sub rule_less_greater { }
+sub rule_comparison { }
 
 sub rule_bit_shift { }
 
@@ -76,24 +75,29 @@ sub rule_var {
 sub rule_func { }
 
 sub rule_func_map {
-    die "Subexpression not yet supported";
 }
 
 sub rule_func_grep {
-    die "Subexpression not yet supported";
 }
 
 sub rule_func_usort {
-    die "Subexpression not yet supported";
 }
 
-sub rule_preprocess {
+sub rule_parenthesis {}
+
+sub expr_preprocess {
     my ($self, %args) = @_;
     $self->result([]);
 }
 
-sub rule_postprocess {
+sub expr_postprocess {}
+
+sub eval {
+    my ($self, $expr) = @_;
+    my $res = Language::Expr::Parser::parse_expr($expr, $self);
+    $self->result;
 }
+
 
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
@@ -104,11 +108,11 @@ __END__
 
 =head1 NAME
 
-Language::Expr::VarEnumer
+Language::Expr::Interpreter::VarEnumer
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 ATTRIBUTES
 
@@ -116,13 +120,17 @@ version 0.03
 
 Store the list of variables seen during parsing.
 
-=head2 METHODS
+=head1 METHODS
 
-=for Pod::Coverage ^rule_.+
+=for Pod::Coverage ^(rule|expr)_.+
 
 =head2 add_var(VAR)
 
 Add variable to B<result> if it is not already in there.
+
+=head1 BUGS/TODOS
+
+Currently $_ in map/grep variables and $a & $b in usort are counted.
 
 =head1 AUTHOR
 

@@ -1,13 +1,12 @@
-package Language::Expr::DummyItp;
+package Language::Expr::Interpreter::Dummy;
 BEGIN {
-  $Language::Expr::DummyItp::VERSION = '0.03';
+  $Language::Expr::Interpreter::Dummy::VERSION = '0.04';
 }
 # Dummy interpreter for Language::Expr (used for testing)
 
 use Any::Moose;
-with 'Language::Expr::InterpreterRole';
-
-require Language::Expr::Parser;
+with 'Language::Expr::EvaluatorRole';
+extends 'Language::Expr::Evaluator';
 
 
 sub rule_pair { }
@@ -15,8 +14,8 @@ sub rule_or_xor { }
 sub rule_and { }
 sub rule_bit_or_xor { }
 sub rule_bit_and { }
-sub rule_equal { }
-sub rule_less_greater { }
+sub rule_comparison3 { }
+sub rule_comparison { }
 sub rule_bit_shift { }
 sub rule_add { }
 sub rule_mult { }
@@ -35,8 +34,9 @@ sub rule_func { }
 sub rule_func_map { }
 sub rule_func_grep { }
 sub rule_func_usort { }
-sub rule_preprocess { }
-sub rule_postprocess { }
+sub rule_parenthesis { }
+sub expr_preprocess { }
+sub expr_postprocess { }
 
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
@@ -47,11 +47,11 @@ __END__
 
 =head1 NAME
 
-Language::Expr::DummyItp
+Language::Expr::Interpreter::Dummy
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 DESCRIPTION
 
@@ -59,9 +59,9 @@ This interpreter does nothing. It is used only for testing the parser.
 
 =head1 ATTRIBUTES
 
-=head2 METHODS
+=head1 METHODS
 
-=for Pod::Coverage ^rule_.+
+=for Pod::Coverage ^(rule|expr)_.+
 
 =head1 AUTHOR
 

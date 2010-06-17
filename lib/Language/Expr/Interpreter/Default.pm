@@ -1,11 +1,12 @@
-package Language::Expr::Interpreter;
+package Language::Expr::Interpreter::Default;
 BEGIN {
-  $Language::Expr::Interpreter::VERSION = '0.03';
+  $Language::Expr::Interpreter::Default::VERSION = '0.04';
 }
 # A default interpreter for Language::Expr
 
 use Any::Moose;
-with 'Language::Expr::InterpreterRole';
+with 'Language::Expr::EvaluatorRole';
+extends 'Language::Expr::Evaluator';
 use List::Util 'reduce';
 
 
@@ -31,6 +32,7 @@ sub rule_or_xor {
     my $res = shift @{$match->{operand}};
     for my $term (@{$match->{operand}}) {
         my $op = shift @{$match->{op}//=[]};
+        last unless $op;
         if    ($op eq '||') { $res ||= $term          }
         elsif ($op eq '//') { $res //= $term          }
         elsif ($op eq '^^') { $res = ($res xor $term) }
@@ -44,6 +46,7 @@ sub rule_and {
     my $res = shift @{$match->{operand}};
     for my $term (@{$match->{operand}}) {
         my $op = shift @{$match->{op}//=[]};
+        last unless $op;
         if    ($op eq '&&') { $res &&= $term }
     }
     $res;
@@ -55,6 +58,7 @@ sub rule_bit_or_xor {
     my $res = shift @{$match->{operand}};
     for my $term (@{$match->{operand}}) {
         my $op = shift @{$match->{op}//=[]};
+        last unless $op;
         if    ($op eq '|') { $res = $res+0 | $term }
         elsif ($op eq '^') { $res = $res+0 ^ $term }
     }
@@ -67,12 +71,13 @@ sub rule_bit_and {
     my $res = shift @{$match->{operand}};
     for my $term (@{$match->{operand}}) {
         my $op = shift @{$match->{op}//=[]};
+        last unless $op;
         if    ($op eq '&') { $res = $res+0 & $term }
     }
     $res;
 }
 
-sub rule_equal {
+sub rule_comparison3 {
     my ($self, %args) = @_;
     my $match = $args{match};
     my $res = shift @{$match->{operand}};
@@ -80,18 +85,15 @@ sub rule_equal {
     my $last_term = $res;
     for my $term (@{$match->{operand}}) {
         my $op = shift @{$match->{op}//=[]};
-        if    ($op eq '==' ) { return '' unless $res = ($last_term ==  $term) }
-        elsif ($op eq '!=' ) { return '' unless $res = ($last_term !=  $term) }
-        elsif ($op eq '<=>') { $res = ($last_term <=> $term) }
-        elsif ($op eq 'eq' ) { return '' unless $res = ($last_term eq  $term) }
-        elsif ($op eq 'ne' ) { return '' unless $res = ($last_term ne  $term) }
+        last unless $op;
+        if    ($op eq '<=>') { $res = ($last_term <=> $term) }
         elsif ($op eq 'cmp') { $res = ($last_term cmp $term) }
         $last_term = $term;
     }
     $res;
 }
 
-sub rule_less_greater {
+sub rule_comparison {
     my ($self, %args) = @_;
     my $match = $args{match};
     my $res = shift @{$match->{operand}};
@@ -99,18 +101,22 @@ sub rule_less_greater {
     my $last_term = $res;
     for my $term (@{$match->{operand}}) {
         my $op = shift @{$match->{op}//=[]};
-        die "Invalid syntax" unless defined($op);
-        if    ($op eq '<' ) { return '' unless ($last_term <  $term) }
-        elsif ($op eq '<=') { return '' unless ($last_term <= $term) }
-        elsif ($op eq '>' ) { return '' unless ($last_term >  $term) }
-        elsif ($op eq '>=') { return '' unless ($last_term >= $term) }
-        elsif ($op eq 'lt') { return '' unless ($last_term lt $term) }
-        elsif ($op eq 'gt') { return '' unless ($last_term gt $term) }
-        elsif ($op eq 'le') { return '' unless ($last_term le $term) }
-        elsif ($op eq 'ge') { return '' unless ($last_term ge $term) }
+        last unless $op;
+        if    ($op eq '==' ) { return '' unless $res = ($last_term == $term ? 1:'') }
+        elsif ($op eq '!=' ) { return '' unless $res = ($last_term != $term ? 1:'') }
+        elsif ($op eq 'eq' ) { return '' unless $res = ($last_term eq $term ? 1:'') }
+        elsif ($op eq 'ne' ) { return '' unless $res = ($last_term ne $term ? 1:'') }
+        elsif ($op eq '<'  ) { return '' unless $res = ($last_term <  $term ? 1:'') }
+        elsif ($op eq '<=' ) { return '' unless $res = ($last_term <= $term ? 1:'') }
+        elsif ($op eq '>'  ) { return '' unless $res = ($last_term >  $term ? 1:'') }
+        elsif ($op eq '>=' ) { return '' unless $res = ($last_term >= $term ? 1:'') }
+        elsif ($op eq 'lt' ) { return '' unless $res = ($last_term lt $term ? 1:'') }
+        elsif ($op eq 'gt' ) { return '' unless $res = ($last_term gt $term ? 1:'') }
+        elsif ($op eq 'le' ) { return '' unless $res = ($last_term le $term ? 1:'') }
+        elsif ($op eq 'ge' ) { return '' unless $res = ($last_term ge $term ? 1:'') }
         $last_term = $term;
     }
-    1;
+    $res;
 }
 
 sub rule_bit_shift {
@@ -119,6 +125,7 @@ sub rule_bit_shift {
     my $res = shift @{$match->{operand}};
     for my $term (@{$match->{operand}}) {
         my $op = shift @{$match->{op}//=[]};
+        last unless $op;
         if    ($op eq '>>') { $res >>= $term }
         elsif ($op eq '<<') { $res <<= $term }
     }
@@ -131,6 +138,7 @@ sub rule_add {
     my $res = shift @{$match->{operand}};
     for my $term (@{$match->{operand}}) {
         my $op = shift @{$match->{op}//=[]};
+        last unless $op;
         if    ($op eq '+') { $res += $term }
         elsif ($op eq '-') { $res -= $term }
         elsif ($op eq '.') { $res .= $term }
@@ -144,6 +152,7 @@ sub rule_mult {
     my $res = shift @{$match->{operand}};
     for my $term (@{$match->{operand}}) {
         my $op = shift @{$match->{op}//=[]};
+        last unless $op;
         if    ($op eq '*') { $res *= $term }
         elsif ($op eq '/') { $res /= $term }
         elsif ($op eq '%') { $res %= $term }
@@ -175,7 +184,7 @@ sub rule_power {
 sub rule_subscripting {
     my ($self, %args) = @_;
     my $match = $args{match};
-    my $res = shift @{$match->{operand}};
+    my $res = $match->{operand};
     for my $i (@{$match->{subscript}}) {
         if (ref($res) eq 'ARRAY'  ) { $res = $res->[$i] }
         elsif (ref($res) eq 'HASH') { $res = $res->{$i} }
@@ -281,7 +290,7 @@ sub _map_grep_usort {
     die "Second argument to map/grep/usort must be an array"
         unless ref($ary) eq 'ARRAY';
     local $self->{level} = $self->{level}+1;
-    print "DEBUG: _map_grep_usort: level=$self->{level}, expr=`$expr`, array=[".join(",", @$ary),"]\n";
+    #print "DEBUG: _map_grep_usort: level=$self->{level}, expr=`$expr`, array=[".join(",", @$ary),"]\n";
     my $res;
     if ($which eq 'map') {
         $res = [];
@@ -324,14 +333,16 @@ sub rule_func_usort {
     _map_grep_usort('usort', @_);
 }
 
-sub rule_preprocess {
-}
+sub rule_parenthesis {}
 
-sub rule_postprocess {
+sub expr_preprocess {}
+
+sub expr_postprocess {
     my ($self, %args) = @_;
     my $result = $args{result};
     $result;
 }
+
 
 __PACKAGE__->meta->make_immutable;
 no Any::Moose;
@@ -342,11 +353,11 @@ __END__
 
 =head1 NAME
 
-Language::Expr::Interpreter
+Language::Expr::Interpreter::Default
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 ATTRIBUTES
 
@@ -362,9 +373,13 @@ List known functions.
 
 Current recursion level.
 
-=head2 METHODS
+=head1 METHODS
 
-=for Pod::Coverage ^rule_.+
+=for Pod::Coverage ^(rule|expr)_.+
+
+=head1 BUGS/TODOS
+
+Currently subexpression (map/grep/usort) doesn't work yet.
 
 =head1 AUTHOR
 

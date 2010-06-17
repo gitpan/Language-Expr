@@ -1,21 +1,34 @@
 package Language::Expr;
 BEGIN {
-  $Language::Expr::VERSION = '0.03';
+  $Language::Expr::VERSION = '0.04';
 }
 # ABSTRACT: Simple minilanguage for use in expression
 
 
 use Any::Moose;
-use Language::Expr::Parser;
-use Language::Expr::Interpreter;
-use Language::Expr::VarEnumer;
+use Language::Expr::Interpreter::Default;
+use Language::Expr::Compiler::Perl;
+use Language::Expr::Interpreter::VarEnumer;
 
 
 
-has interpreter => (is => 'ro', default => sub { Language::Expr::Interpreter->new });
+has interpreted => (is => 'rw', default => 0);
 
 
-has varenumer => (is => 'ro', default => sub { Language::Expr::VarEnumer->new });
+has interpreter => (
+    is => 'ro',
+    default => sub { Language::Expr::Interpreter::Default->new });
+
+
+has compiler => (
+    is => 'ro',
+    default => sub { Language::Expr::Compiler::Perl->new });
+
+
+has varenumer => (
+    is => 'ro',
+    default => sub { Language::Expr::Interpreter::VarEnumer->new });
+
 
 
 
@@ -39,16 +52,14 @@ sub func {
 
 sub eval {
     my ($self, $str) = @_;
-    my $itp = $self->interpreter;
-    Language::Expr::Parser::parse_expr($str, $itp);
+    my $evaluator = $self->interpreted ? $self->interpreter : $self->compiler;
+    $evaluator->eval($str);
 }
 
 
 sub enum_vars {
     my ($self, $str) = @_;
-    my $v = $self->varenumer;
-    Language::Expr::Parser::parse_expr($str, $v);
-    $v->result;
+    $self->varenumer->eval($str);
 }
 
 
@@ -64,7 +75,7 @@ Language::Expr - Simple minilanguage for use in expression
 
 =head1 VERSION
 
-version 0.03
+version 0.04
 
 =head1 SYNOPSIS
 
@@ -90,22 +101,29 @@ The language is very simple. The parser is just around 120 lines
 long.
 
 This distribution consists of the language parser
-(L<Language::Expr::Parser>) and the interpreter
-(L<Language::Expr::Interpreter>).
-
-The parser is used by other modules such as L<Data::Template::Expr>
-and L<Data::Schema>, to provide support for expressions. In the latter
-case, the expressions are converted into Perl, PHP, and JavaScript.
+(L<Language::Expr::Parser>), some interpreters
+(Language::Expr::Interpreter::*), and some compilers
+(Language::Expr::Compiler::*).
 
 =head1 ATTRIBUTES
 
-=head2 interpreter
+=head2 interpreted => BOOL
 
-The Language::Expr::Interpreter instance.
+Whether to use the interpreter. By default is 0 (use the compiler,
+which means Language::Expr expression will be compiled to Perl code
+first before executed).
 
-=head2 varenumer
+=head2 interpreter => OBJ
 
-The Language::Expr::VarEnumer instance.
+The Language::Expr::Interpreter::Default instance.
+
+=head2 compiler => OBJ
+
+The Language::Expr::Compiler::Perl instance.
+
+=head2 varenumer => OBJ
+
+The Language::Expr::Interpreter::VarEnumer instance.
 
 =head1 METHODS
 
@@ -124,7 +142,8 @@ Define functions. Dies if function is defined multiple times.
 =head2 eval(STR) => RESULT
 
 Evaluate expression in STR and return the result. Will die if there is
-a parsing or runtime error.
+a parsing or runtime error. By default it uses the compiler unless you
+set C<interpreted> to 1.
 
 =head2 enum_vars(STR) => ARRAYREF
 
@@ -146,14 +165,9 @@ schemas.
 
 =head2 Why don't you use Language::Farnsworth, or Math::Expression, or Math::Expression::Evaluator, or $FOO?
 
-I need a parser separate from the interpreter, because in different
-applications I need a different set of functions and different
-semantics. In Data::Schema, I also need to use the parser to emit code
-for other languages.
-
-The language is simple enough that it's much easier to just create my
-own parser instead of trying to fit the abovementioned modules for my
-needs.
+I need several compilers and interpreters (some even with different
+semantics), so that it's easier to start with a simple parser of my
+own. And of course there are personal preference of language syntax.
 
 =head2 I want different syntax for (variables, foo operator, etc)!
 
@@ -167,6 +181,9 @@ L<Regexp::Grammmars> should be much faster than
 L<Parse::RecDescent>. If you need faster parsing speed you can take a
 look at reimplementing the parser using L<Parse::Yapp>,
 L<Parse::Eyapp>, etc.
+
+If you are having performance runtime problem, try switching from
+using the interpreter to using one of the available compilers.
 
 =head2 How to show details of errors in expression?
 
