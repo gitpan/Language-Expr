@@ -5,6 +5,7 @@ META.yml
 README
 dist.ini
 lib/Language/Expr.pm
+lib/Language/Expr/Compiler/JS.pm
 lib/Language/Expr/Compiler/Perl.pm
 lib/Language/Expr/Evaluator.pm
 lib/Language/Expr/EvaluatorRole.pm
@@ -15,6 +16,8 @@ lib/Language/Expr/Manual/Syntax.pod
 lib/Language/Expr/Parser.pm
 t/00-compile.t
 t/enum_vars.t
+t/eval-js.t
 t/eval.t
 t/release-pod-coverage.t
 t/release-pod-syntax.t
+t/stdtests.pl

@@ -12,7 +12,7 @@ Language::Expr::Manual::Syntax - Description of the Language::Expr language
 
 =head1 VERSION
 
-version 0.04
+version 0.05
 
 =head1 OVERVIEW
 

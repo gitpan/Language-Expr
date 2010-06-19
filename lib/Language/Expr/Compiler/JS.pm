@@ -1,8 +1,8 @@
-package Language::Expr::Compiler::Perl;
+package Language::Expr::Compiler::JS;
 BEGIN {
-  $Language::Expr::Compiler::Perl::VERSION = '0.05';
+  $Language::Expr::Compiler::JS::VERSION = '0.05';
 }
-# Compile Language::Expr expression to Perl
+# Compile Language::Expr expression to JS
 
 use Any::Moose;
 with 'Language::Expr::EvaluatorRole';
@@ -367,7 +367,7 @@ __END__
 
 =head1 NAME
 
-Language::Expr::Compiler::Perl
+Language::Expr::Compiler::JS
 
 =head1 VERSION
 
@@ -375,7 +375,7 @@ version 0.05
 
 =head1 DESCRIPTION
 
-Compiles Language::Expr expression to Perl code. Some notes:
+Compiles Language::Expr expression to JS code. Some notes:
 
 =over 4
 
@@ -384,11 +384,10 @@ Compiles Language::Expr expression to Perl code. Some notes:
 Data dumping modules can't be used currently due to segfaults (at
 least in 5.10.1).
 
-=item * Variables by default simply use Perl variables.
+=item * Variables by default simply use JavaScript variables.
 
 E.g. $a becomes $a, and so on. Be careful not to make variables which
-are invalid in Perl, e.g. $.. or ${foo/bar} (but ${foo::bar} is okay
-because it translates to $foo::bar).
+are invalid in JavaScript, e.g. $.. or ${foo/bar}.
 
 You can subclass and override rule_var() if you want to provide your
 own variables.

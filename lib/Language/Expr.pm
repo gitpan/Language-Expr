@@ -1,6 +1,6 @@
 package Language::Expr;
 BEGIN {
-  $Language::Expr::VERSION = '0.04';
+  $Language::Expr::VERSION = '0.05';
 }
 # ABSTRACT: Simple minilanguage for use in expression
 
@@ -75,7 +75,7 @@ Language::Expr - Simple minilanguage for use in expression
 
 =head1 VERSION
 
-version 0.04
+version 0.05
 
 =head1 SYNOPSIS
 
@@ -157,11 +157,12 @@ Enumerate variables mentioned in expression STR. Return empty arrayref
 When first adding expression support to L<Data::Schema>, I want a
 language that is simple enough so I can easily convert it to Perl,
 PHP, JavaScript, and others. I do not need a fully-fledged programming
-language (in fact, Expr is not even Turing-complete, it does not
-support assignment or loops). Instead, I just need some basic stuffs
-like mathematical/string/logical operators, arrays, hashes, and
-functions. This language will mostly be used inside templates and
-schemas.
+languag. In fact, Expr is not even Turing-complete, it does not
+support assignment or loops. Nor does it allow function definition
+(though it allows anonymous function in grep/map/usort). Instead, I
+just need some basic stuffs like mathematical/string/logical
+operators, arrays, hashes, functions, map/grep/usort. This language
+will mostly be used inside templates and schemas.
 
 =head2 Why don't you use Language::Farnsworth, or Math::Expression, or Math::Expression::Evaluator, or $FOO?
 

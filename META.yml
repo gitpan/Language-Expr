@@ -22,4 +22,4 @@ requires:
 resources:
   homepage: http://search.cpan.org/dist/perl-Language-Expr/
   repository: http://github.com/sharyanto/perl-Language-Expr
-version: 0.04
+version: 0.05
