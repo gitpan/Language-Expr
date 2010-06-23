@@ -1,6 +1,6 @@
 package Language::Expr::EvaluatorRole;
 BEGIN {
-  $Language::Expr::EvaluatorRole::VERSION = '0.05';
+  $Language::Expr::EvaluatorRole::VERSION = '0.06';
 }
 # ABSTRACT: Specification for Language::Expr interpreter/compiler
 
@@ -47,7 +47,7 @@ Language::Expr::EvaluatorRole - Specification for Language::Expr interpreter/com
 
 =head1 VERSION
 
-version 0.05
+version 0.06
 
 =head1 AUTHOR
 

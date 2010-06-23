@@ -1,6 +1,6 @@
 package Language::Expr::Parser;
 BEGIN {
-  $Language::Expr::Parser::VERSION = '0.05';
+  $Language::Expr::Parser::VERSION = '0.06';
 }
 # ABSTRACT: Parse Language::Expr expression
 
@@ -30,7 +30,7 @@ sub parse_expr {
     # results in segfault/bus error.
 
     state $grammars = [ map { qr{
-        ^<answer>$
+        ^\s*<answer>\s*$
 
         <rule: answer>
             <MATCH=or_xor>
@@ -195,7 +195,7 @@ Language::Expr::Parser - Parse Language::Expr expression
 
 =head1 VERSION
 
-version 0.05
+version 0.06
 
 =head1 METHODS
 

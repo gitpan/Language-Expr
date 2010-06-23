@@ -16,15 +16,19 @@ my %module_build_args = (
     'Steven Haryanto <stevenharyanto@gmail.com>'
   ],
   'dist_name' => 'Language-Expr',
-  'dist_version' => '0.05',
+  'dist_version' => '0.06',
   'license' => 'perl',
   'module_name' => 'Language::Expr',
   'recommends' => {},
   'requires' => {
     'Any::Moose' => '0',
+    'File::Which' => '0',
+    'JSON' => '0',
     'Mouse' => '0',
     'Regexp::Grammars' => '0',
+    'String::ShellQuote' => '0',
     'UUID::Tiny' => '0',
+    'boolean' => '0.20',
     'perl' => '5.010000'
   },
   'script_files' => []

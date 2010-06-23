@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::Perl;
 BEGIN {
-  $Language::Expr::Compiler::Perl::VERSION = '0.05';
+  $Language::Expr::Compiler::Perl::VERSION = '0.06';
 }
 # Compile Language::Expr expression to Perl
 
@@ -9,6 +9,7 @@ with 'Language::Expr::EvaluatorRole';
 extends 'Language::Expr::Evaluator';
 
 use UUID::Tiny ':std';
+use boolean;
 
 
 has todo => (is => 'rw', default => sub { [] });
@@ -45,7 +46,7 @@ sub rule_and {
     for my $term (@{$match->{operand}}) {
         my $op = shift @{$match->{op}//=[]};
         last unless $op;
-        if    ($op eq '&&') { push @res, " && $term" }
+        if    ($op eq '&&') { @res = ("((", @res, " && $term) || false)") }
     }
     join "", grep {defined} @res;
 }
@@ -106,7 +107,6 @@ sub rule_comparison {
         elsif ($op eq '!=' ) { push @ops, '!='  }
         elsif ($op eq 'eq' ) { push @ops, 'eq'  }
         elsif ($op eq 'ne' ) { push @ops, 'ne'  }
-        elsif ($op eq 'ne' ) { push @ops, 'ne'  }
         elsif ($op eq '<'  ) { push @ops, '<'   }
         elsif ($op eq '<=' ) { push @ops, '<='  }
         elsif ($op eq '>'  ) { push @ops, '>'   }
@@ -130,9 +130,9 @@ sub rule_comparison {
             $opd1 = pop @opds;
         }
         if (@res) {
-            @res = ("(($opd1 $op $opd2) ? ", @res, " : '')");
+            @res = ("(($opd1 $op $opd2) ? ", @res, " : false)");
         } else {
-            push @res, "($opd1 $op $opd2)";
+            push @res, "($opd1 $op $opd2 ? true:false)";
         }
         $lastopd = $opd1;
     }
@@ -192,7 +192,7 @@ sub rule_unary {
     for my $op (reverse @{$match->{op}//=[]}) {
         last unless $op;
         # use paren because --x or ++x is interpreted as pre-decrement/increment
-        if    ($op eq '!') { @res = ("!(", @res, ")") }
+        if    ($op eq '!') { @res = ("(", @res, " ? false:true)") }
         if    ($op eq '-') { @res = ("-(", @res, ")") }
         if    ($op eq '~') { @res = ("~(", @res, ")") }
     }
@@ -254,7 +254,7 @@ sub rule_dquotestr {
 sub rule_bool {
     my ($self, %args) = @_;
     my $match = $args{match};
-    if ($match->{bool} eq 'true') { 1 } else { "''" }
+    if ($match->{bool} eq 'true') { "true" } else { "false" }
 }
 
 sub rule_num {
@@ -328,7 +328,8 @@ sub __quote {
         elsif ($c eq '$') { push @c, "\\\$" }
         elsif ($c eq '@') { push @c, '\\@' }
         elsif ($o >= 32 && $o <= 127) { push @c, $c }
-        else { push @c, sprintf("\\x%02x", $o) }
+        elsif ($o > 255) { push @c, sprintf("\\x{%04x}", $o) }
+        else  { push @c, sprintf("\\x%02x", $o) }
     }
     '"' . join("", @c) . '"';
 }
@@ -371,13 +372,26 @@ Language::Expr::Compiler::Perl
 
 =head1 VERSION
 
-version 0.05
+version 0.06
 
 =head1 DESCRIPTION
 
 Compiles Language::Expr expression to Perl code. Some notes:
 
 =over 4
+
+=item * Emitted Perl code version
+
+Emitted Perl code requires Perl 5.10 (it uses 5.10's "//" defined-or
+operator) and also the L<boolean> module (it uses 'true' and 'false'
+objects).
+
+=item * Perliness
+
+The emitted Perl code will follow Perl's notion of true and false,
+e.g. the expression '"" || "0" || 2' will result to 2 since Perl
+thinks that "" and "0" are false. It is also weakly typed like Perl,
+i.e. allows '1 + "2"' to become 3.
 
 =item * Currently strings are rudimentary escaped.
 

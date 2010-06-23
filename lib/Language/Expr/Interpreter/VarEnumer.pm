@@ -1,6 +1,6 @@
 package Language::Expr::Interpreter::VarEnumer;
 BEGIN {
-  $Language::Expr::Interpreter::VarEnumer::VERSION = '0.05';
+  $Language::Expr::Interpreter::VarEnumer::VERSION = '0.06';
 }
 # Enumerate variables mentioned in Language::Expr expression
 
@@ -112,7 +112,7 @@ Language::Expr::Interpreter::VarEnumer
 
 =head1 VERSION
 
-version 0.05
+version 0.06
 
 =head1 ATTRIBUTES
 
