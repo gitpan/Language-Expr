@@ -1,6 +1,6 @@
 package Language::Expr;
 BEGIN {
-  $Language::Expr::VERSION = '0.06';
+  $Language::Expr::VERSION = '0.07';
 }
 # ABSTRACT: Simple minilanguage for use in expression
 
@@ -75,7 +75,7 @@ Language::Expr - Simple minilanguage for use in expression
 
 =head1 VERSION
 
-version 0.06
+version 0.07
 
 =head1 SYNOPSIS
 
@@ -192,19 +192,11 @@ This is a TODO item.
 
 =head2 How to convert Expr expression into Perl code?
 
- use Language::Expr::Compiler::Perl;
- my $plc = Language::Expr::Compiler::Perl;
- print $plc->perl('1 ^^ 2'); # prints '1 xor 2'
-
-See L<Language::Expr::Compiler::Perl> for more details.
+See L<Language::Expr::Compiler::Perl>.
 
 =head2 How to convert Expr expression into JavaScript code?
 
- use Language::Expr::Compiler::JS;
- my $jsc = Language::Expr::Compiler::JS;
- print $jsc->js('map({$_**2}, [1, 2, 3])'); # prints '[1, 2, 3].map(function(_){ Math.pow(_, 2) })'
-
-See L<Language::Expr::Compiler::JS> for more details.
+See L<Language::Expr::Compiler::JS>.
 
 =head1 BUGS
 

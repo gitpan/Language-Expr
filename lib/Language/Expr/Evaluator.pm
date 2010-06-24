@@ -1,8 +1,8 @@
 package Language::Expr::Evaluator;
 BEGIN {
-  $Language::Expr::Evaluator::VERSION = '0.06';
+  $Language::Expr::Evaluator::VERSION = '0.07';
 }
-# Base class for Language::Expr compilers and interpreters
+# ABSTRACT: Base class for Language::Expr compilers and interpreters
 
 use Any::Moose;
 require Language::Expr::Parser;
@@ -23,11 +23,11 @@ __END__
 
 =head1 NAME
 
-Language::Expr::Evaluator
+Language::Expr::Evaluator - Base class for Language::Expr compilers and interpreters
 
 =head1 VERSION
 
-version 0.06
+version 0.07
 
 =head1 METHODS
 

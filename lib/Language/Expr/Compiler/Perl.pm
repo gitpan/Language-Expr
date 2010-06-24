@@ -1,8 +1,8 @@
 package Language::Expr::Compiler::Perl;
 BEGIN {
-  $Language::Expr::Compiler::Perl::VERSION = '0.06';
+  $Language::Expr::Compiler::Perl::VERSION = '0.07';
 }
-# Compile Language::Expr expression to Perl
+# ABSTRACT: Compile Language::Expr expression to Perl
 
 use Any::Moose;
 with 'Language::Expr::EvaluatorRole';
@@ -368,11 +368,17 @@ __END__
 
 =head1 NAME
 
-Language::Expr::Compiler::Perl
+Language::Expr::Compiler::Perl - Compile Language::Expr expression to Perl
 
 =head1 VERSION
 
-version 0.06
+version 0.07
+
+=head1 SYNOPSIS
+
+ use Language::Expr::Compiler::Perl;
+ my $plc = Language::Expr::Compiler::Perl->new;
+ print $plc->perl('1 ^^ 2'); # prints '1 xor 2'
 
 =head1 DESCRIPTION
 

@@ -1,8 +1,8 @@
 package Language::Expr::Compiler::JS;
 BEGIN {
-  $Language::Expr::Compiler::JS::VERSION = '0.06';
+  $Language::Expr::Compiler::JS::VERSION = '0.07';
 }
-# Compile Language::Expr expression to JS
+# ABSTRACT: Compile Language::Expr expression to JS
 
 use 5.010;
 use Any::Moose;
@@ -398,11 +398,22 @@ __END__
 
 =head1 NAME
 
-Language::Expr::Compiler::JS
+Language::Expr::Compiler::JS - Compile Language::Expr expression to JS
 
 =head1 VERSION
 
-version 0.06
+version 0.07
+
+=head1 SYNOPSIS
+
+ use Language::Expr::Compiler::JS;
+ my $jsc = Language::Expr::Compiler::JS->new;
+ print $jsc->js('map({$_**2}, [1, 2, 3])'); # prints: [1, 2, 3].map(function(_){ Math.pow(_, 2) })
+
+ # map Expr function to JS function/method
+ $jsc->func_mapping->{ceil} = 'Math.ceil';
+ $jsc->func_mapping->{uc} = '.toUpperCase';
+ print $jsc->js(q{uc("party like it's ") . ceil(1998.9)}); # prints: "party like it's ".toUpperCase() + Math.ceil(1998.9)
 
 =head1 DESCRIPTION
 

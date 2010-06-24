@@ -18,7 +18,7 @@ requires:
   File::Which: 0
   JSON: 0
   Mouse: 0
-  Regexp::Grammars: 0
+  Regexp::Grammars: 1.005
   String::ShellQuote: 0
   UUID::Tiny: 0
   boolean: 0.20
@@ -26,4 +26,4 @@ requires:
 resources:
   homepage: http://search.cpan.org/dist/perl-Language-Expr/
   repository: http://github.com/sharyanto/perl-Language-Expr
-version: 0.06
+version: 0.07

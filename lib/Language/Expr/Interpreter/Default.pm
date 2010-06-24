@@ -1,8 +1,8 @@
 package Language::Expr::Interpreter::Default;
 BEGIN {
-  $Language::Expr::Interpreter::Default::VERSION = '0.06';
+  $Language::Expr::Interpreter::Default::VERSION = '0.07';
 }
-# A default interpreter for Language::Expr
+# ABSTRACT: A default interpreter for Language::Expr
 
 use Any::Moose;
 with 'Language::Expr::EvaluatorRole';
@@ -354,11 +354,11 @@ __END__
 
 =head1 NAME
 
-Language::Expr::Interpreter::Default
+Language::Expr::Interpreter::Default - A default interpreter for Language::Expr
 
 =head1 VERSION
 
-version 0.06
+version 0.07
 
 =head1 DESCRIPTION
 

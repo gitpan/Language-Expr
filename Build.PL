@@ -16,7 +16,7 @@ my %module_build_args = (
     'Steven Haryanto <stevenharyanto@gmail.com>'
   ],
   'dist_name' => 'Language-Expr',
-  'dist_version' => '0.06',
+  'dist_version' => '0.07',
   'license' => 'perl',
   'module_name' => 'Language::Expr',
   'recommends' => {},
@@ -25,7 +25,7 @@ my %module_build_args = (
     'File::Which' => '0',
     'JSON' => '0',
     'Mouse' => '0',
-    'Regexp::Grammars' => '0',
+    'Regexp::Grammars' => '1.005',
     'String::ShellQuote' => '0',
     'UUID::Tiny' => '0',
     'boolean' => '0.20',

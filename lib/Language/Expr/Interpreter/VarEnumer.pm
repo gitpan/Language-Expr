@@ -1,8 +1,8 @@
 package Language::Expr::Interpreter::VarEnumer;
 BEGIN {
-  $Language::Expr::Interpreter::VarEnumer::VERSION = '0.06';
+  $Language::Expr::Interpreter::VarEnumer::VERSION = '0.07';
 }
-# Enumerate variables mentioned in Language::Expr expression
+# ABSTRACT: Enumerate variables mentioned in Language::Expr expression
 
 use Any::Moose;
 with 'Language::Expr::EvaluatorRole';
@@ -108,11 +108,11 @@ __END__
 
 =head1 NAME
 
-Language::Expr::Interpreter::VarEnumer
+Language::Expr::Interpreter::VarEnumer - Enumerate variables mentioned in Language::Expr expression
 
 =head1 VERSION
 
-version 0.06
+version 0.07
 
 =head1 ATTRIBUTES
 

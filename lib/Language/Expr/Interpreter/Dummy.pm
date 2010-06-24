@@ -1,8 +1,8 @@
 package Language::Expr::Interpreter::Dummy;
 BEGIN {
-  $Language::Expr::Interpreter::Dummy::VERSION = '0.06';
+  $Language::Expr::Interpreter::Dummy::VERSION = '0.07';
 }
-# Dummy interpreter for Language::Expr (used for testing)
+# ABSTRACT: Dummy interpreter for Language::Expr (used for testing)
 
 use Any::Moose;
 with 'Language::Expr::EvaluatorRole';
@@ -47,11 +47,11 @@ __END__
 
 =head1 NAME
 
-Language::Expr::Interpreter::Dummy
+Language::Expr::Interpreter::Dummy - Dummy interpreter for Language::Expr (used for testing)
 
 =head1 VERSION
 
-version 0.06
+version 0.07
 
 =head1 DESCRIPTION
 
