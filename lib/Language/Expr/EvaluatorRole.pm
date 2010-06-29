@@ -1,12 +1,13 @@
 package Language::Expr::EvaluatorRole;
 BEGIN {
-  $Language::Expr::EvaluatorRole::VERSION = '0.07';
+  $Language::Expr::EvaluatorRole::VERSION = '0.08';
 }
 # ABSTRACT: Specification for Language::Expr interpreter/compiler
 
 use Any::Moose '::Role';
 
-requires 'rule_pair';
+requires 'rule_pair_simple';
+requires 'rule_pair_string';
 requires 'rule_or_xor';
 requires 'rule_and';
 requires 'rule_bit_or_xor';
@@ -18,7 +19,8 @@ requires 'rule_add';
 requires 'rule_mult';
 requires 'rule_unary';
 requires 'rule_power';
-requires 'rule_subscripting';
+requires 'rule_subscripting_var';
+requires 'rule_subscripting_expr';
 requires 'rule_array';
 requires 'rule_hash';
 requires 'rule_undef';
@@ -47,7 +49,7 @@ Language::Expr::EvaluatorRole - Specification for Language::Expr interpreter/com
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 AUTHOR
 

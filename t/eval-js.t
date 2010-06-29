@@ -31,7 +31,7 @@ BEGIN {
                 }
             }
         };
-        $@ and die $@;
+        #$@ and die $@;
 
         # JavaScript.pm && JE.pm are not good/compatible enough: no
         # JSON object, etc.
@@ -43,13 +43,14 @@ BEGIN {
     }
 }
 
-use Test::More tests => 155;
+use Test::More tests => 162;
 use Test::Exception;
 use Data::Walk;
 use JSON;
 use Language::Expr::Compiler::JS;
 use String::ShellQuote;
 use lib "./t";
+require "testlib.pl";
 require "stdtests.pl";
 
 sub eval_in_js($$) {
@@ -98,27 +99,12 @@ sub eval_in_js($$) {
     }
 }
 
-sub convert_json_booleans {
-    my $arg = shift;
-    walk sub { bless $_, 'boolean' if ref($_) eq 'JSON::PP::Boolean' }, $arg;
-    $arg;
-}
-
 my $js = new Language::Expr::Compiler::JS;
-$js->{_jscode_prefix} = "let a=1; let b=2; ";
+$js->{_jscode_prefix} = "let a=1; let b=2; let ary1=['one','two','three']; let hash1={one:1, two:2, three:3};";
 $js->func_mapping->{floor} = 'Math.floor';
 $js->func_mapping->{ceil}  = 'Math.ceil';
 $js->func_mapping->{uc}  = '.toUpperCase';
-
-#$le->func(
-#    'length' => sub { length(shift) },
-#    'floor'  => sub { POSIX::floor(shift) },
-#    'ceil'   => sub { POSIX::ceil(shift) },
-#);
-#package Language::Expr::Compiler::Perl;
-#sub floor { POSIX::floor(shift) }
-#sub ceil { POSIX::ceil(shift) }
-#package main;
+$js->func_mapping->{length}  = ':length';
 
 my @stdtests = stdtests();
 #my @stdtests = (

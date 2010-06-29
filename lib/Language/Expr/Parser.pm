@@ -1,6 +1,6 @@
 package Language::Expr::Parser;
 BEGIN {
-  $Language::Expr::Parser::VERSION = '0.07';
+  $Language::Expr::Parser::VERSION = '0.08';
 }
 # ABSTRACT: Parse Language::Expr expression
 
@@ -41,8 +41,12 @@ sub parse_expr {
 
 # precedence level  2: left     =>
         <rule: pair>
-            <key> =\> <value=answer>
-            (?{ $MATCH = $obj->rule_pair(match=>\%MATCH) })
+            <key=(\w+)> =\> <value=answer>
+            (?{ $MATCH = $obj->rule_pair_simple(match=>\%MATCH) })
+          | <key=squotestr> =\> <value=answer>
+            (?{ $MATCH = $obj->rule_pair_string(match=>\%MATCH) })
+          | <key=dquotestr> =\> <value=answer>
+            (?{ $MATCH = $obj->rule_pair_string(match=>\%MATCH) })
 
 # precedence level  3: left     || // ^^
         <rule: or_xor>
@@ -103,8 +107,10 @@ sub parse_expr {
 
 # precedence level 14: left    hash[s], array[i]
         <rule: subscripting>
-            <operand=term> <[subscript]>*
-            (?{ $MATCH = $obj->rule_subscripting(match=>\%MATCH) })
+            <operand=var0> <[subscript]>*
+            (?{ $MATCH = $obj->rule_subscripting_var(match=>\%MATCH) })
+          | <operand=term> <[subscript]>*
+            (?{ $MATCH = $obj->rule_subscripting_expr(match=>\%MATCH) })
 
         <rule: subscript>
               \[ <MATCH=term> \]
@@ -133,10 +139,6 @@ sub parse_expr {
             (?{ $MATCH = $obj->rule_hash(match=>{pair=>[]}) })
           | \{ <[pair]> ** (,) \}
             (?{ $MATCH = $obj->rule_hash(match=>\%MATCH) })
-
-        <rule: key>
-            <MATCH=(\w+)>
-          | <MATCH=answer>
 
         <token: undef>
             undef
@@ -172,7 +174,7 @@ sub parse_expr {
         <rule: func>
             <func_name=([A-Za-z_]\w*)> \( \)
             (?{ $MATCH = $obj->rule_func(match=>{func_name=>$MATCH{func_name}, args=>[]}) })
-          | <func_name=(map|grep|usort)> \( \{ <expr=answer> \} (?{ push @$subexpr_stack, $CONTEXT; }), <input_array=answer> \)
+          | <func_name=(map|grep|usort)> \( \{ <expr=answer> \} (?{ push @$subexpr_stack, $CONTEXT }), <input_array=answer> \)
             (?{ my $meth = "rule_func_$MATCH{func_name}";
                 $MATCH = $obj->$meth(match=>{expr=>pop(@$subexpr_stack), array=>$MATCH{input_array}}) })
           | <func_name=([A-Za-z_]\w*)> \( <[args=answer]> ** (,) \)
@@ -198,7 +200,7 @@ Language::Expr::Parser - Parse Language::Expr expression
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 METHODS
 

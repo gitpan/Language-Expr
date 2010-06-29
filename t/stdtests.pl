@@ -1,5 +1,15 @@
 use boolean;
 
+sub stdvars {
+    return (
+        a => 1,
+        b => 2,
+        'a b' => 3,
+        ary1 => [qw/one two three/],
+        hash1 => {one=>1, two=>2, three=>3},
+    );
+}
+
 sub stdtests {
     return (
     # array
@@ -14,9 +24,11 @@ sub stdtests {
     {category=>'array', parse_error=>qr/invalid syntax/i, text=>'[a]'},
 
     # hash
-    {category=>'hash', text=>'{}', result=>{}},
+    {category=>'hash', text=>'{}', result=>{}, php_result=>[]}, # due to ambiguity of php arrays
     {category=>'hash', text=>'{a=>1}', result=>{a=>1}},
     {category=>'hash', text=>q[{'a'=>1}], result=>{a=>1}},
+    {category=>'hash', text=>q[{"a b"=>1}], result=>{"a b"=>1}},
+    {category=>'hash', text=>'{("a"."b")=>1}', parse_error=>qr/invalid syntax/i, xresult=>{ab=>1}}, # many languages (e.g. php and js) don't support expression before "=>", so we disallow them for the moment
     {category=>'hash', text=>'{a=>1, "b c"=>1+1}', result=>{a=>1, "b c"=>2}},
     {category=>'hash', parse_error=>qr/invalid syntax/i, text=>'{'},
     {category=>'hash', parse_error=>qr/invalid syntax/i, text=>'}'},
@@ -117,7 +129,7 @@ sub stdtests {
     {category=>'unary', text=>'!!2', result=>true},
     {category=>'unary', text=>'--2', result=>2},
     {category=>'unary', text=>'---2', result=>-2},
-    {category=>'unary', text=>'~2', result=>~2, js_result=>(-(2)-1)}, # js's bitwise NOT is a bit peculiar
+    {category=>'unary', text=>'~2', result=>~2, js_result=>(-(2)-1), php_result=>(-(2)-1)},
 
     # bitwise
     {category=>'bit', text=>'3|5', result=>'7'},
@@ -161,6 +173,8 @@ sub stdtests {
     {category=>'var', text=>'$a+2*$b', result=>'5'},
 
     # term:subscript
+    {category=>'subscripting', text => '$ary1[1]', result=>'two'},
+    {category=>'subscripting', text => '$hash1["two"]', result=>'2'},
     {category=>'subscripting', text => '([10, 20, 30])[0]', result=>'10'},
     {category=>'subscripting', text => '([10, 20, 30])[2]', result=>'30'},
     {category=>'subscripting', text => '([1, 2, 3])[3]', result=>undef},
@@ -181,11 +195,11 @@ sub stdtests {
     {category=>'map', has_subexpr=>1, text=>'map {}, []', parse_error=>qr/invalid syntax/i}, # lack parenthesis
     {category=>'map', has_subexpr=>1, text=>'map({1<}, [])', parse_error=>qr/invalid syntax/i}, # invalid subexpression
 
-    {category=>'map', has_subexpr=>1, text=>'map()', compiler_run_error=>qr/not enough arg/i, js_compiler_run_error=>qr/javascript error/i},
+    {category=>'map', has_subexpr=>1, text=>'map()', compiler_run_error=>qr/not enough arg/i, js_compiler_run_error=>qr/javascript error/i, php_compiler_run_error=>qr/undefined function map/i},
     #{category=>'map', has_subexpr=>1, text=>'map({}, [])'}, # empty subexpression. won't be parsed as map(), but ok.
     #{category=>'map', has_subexpr=>1, text=>'map(1, [])'}, # not subexpression. won't be parsed as map(), but ok. but in perl result will be 1.
 
-    {category=>'map', has_subexpr=>1, text=>'map({$_*2}, {})', compiler_run_error=>qr/syntax error|unmatched right/i, js_compiler_run_error=>qr/javascript error/i}, # although doesn't make sense, parses
+    {category=>'map', has_subexpr=>1, text=>'map({$_*2}, {})', compiler_run_error=>qr/syntax error|unmatched right/i, js_compiler_run_error=>qr/javascript error/i, php_result=>[]}, # although doesn't make sense, parses. in php {} will become array() == [].
     {category=>'map', has_subexpr=>1, text=>'map({$_*2}, [])', result=>[]},
     {category=>'map', has_subexpr=>1, text=>'map({$_*2}, [1,2,3])', result=>[2, 4, 6]},
     {category=>'map', has_subexpr=>1, text=>'map({ map({$_+1}, [$_])[0] }, [1,2,3])', result=>[2, 3, 4]}, # nested map
@@ -194,11 +208,11 @@ sub stdtests {
     {category=>'grep', has_subexpr=>1, text=>'grep {}, []', parse_error=>qr/invalid syntax/i}, # lack parenthesis
     {category=>'grep', has_subexpr=>1, text=>'grep({1<}, [])', parse_error=>qr/invalid syntax/i}, # invalid subexpression
 
-    {category=>'grep', has_subexpr=>1,  text=>'grep()', compiler_run_error=>qr/not enough arg/i, js_compiler_run_error=>qr/javascript error/i}, # lack arguments. won't be parsed as grep(), but ok
+    {category=>'grep', has_subexpr=>1,  text=>'grep()', compiler_run_error=>qr/not enough arg/i, js_compiler_run_error=>qr/javascript error/i, php_compiler_run_error=>qr/undefined function grep/i}, # lack arguments. won't be parsed as grep(), but ok
     #{category=>'grep', has_subexpr=>1, text=>'grep({}, [])'}, # empty subexpression. won't be parsed as grep(), but ok
     #{category=>'grep', has_subexpr=>1, text=>'grep(1, [])'}, # not subexpression. won't be parsed as grep(), but ok
 
-    {category=>'grep', has_subexpr=>1, text=>'grep({$_>1}, {})', compiler_run_error=>qr/syntax error|unmatched right/i, js_compiler_run_error=>qr/javascript error/i}, # although doesn't make sense, parses
+    {category=>'grep', has_subexpr=>1, text=>'grep({$_>1}, {})', compiler_run_error=>qr/syntax error|unmatched right/i, js_compiler_run_error=>qr/javascript error/i, php_result=>[]}, # although doesn't make sense, parses. in php {} will become array() == [].
     {category=>'grep', has_subexpr=>1, text=>'grep({$_>1}, [])', result=>[]},
     {category=>'grep', has_subexpr=>1, text=>'grep({$_>1}, [1,2,3])', result=>[2, 3]},
     {category=>'grep', has_subexpr=>1, text=>'grep({ grep({$_ > 1}, [$_])[0] }, [1,2,3])', result=>[2, 3]}, # nested grep
@@ -207,15 +221,21 @@ sub stdtests {
     {category=>'usort', has_subexpr=>1, text=>'usort {}, []', parse_error=>qr/invalid syntax/i}, # lack parenthesis
     {category=>'usort', has_subexpr=>1, text=>'usort({1<}, [])', parse_error=>qr/invalid syntax/i}, # invalid subexpression
 
-    {category=>'usort', has_subexpr=>1, text=>'usort()', compiler_run_error=>qr/undefined sub.+usort/i, js_compiler_run_error=>qr/javascript error/i}, # lack arguments. won't be parsed as usort(), but ok
+    {category=>'usort', has_subexpr=>1, text=>'usort()', compiler_run_error=>qr/undefined sub.+usort/i, js_compiler_run_error=>qr/javascript error/i, php_compiler_run_error=>qr/usort\(\) expects exactly 2 parameters/i}, # lack arguments. won't be parsed as usort(), but ok
     #{category=>'usort', has_subexpr=>1, text=>'usort({}, [])'}, # empty subexpression. won't be parsed as usort(), but ok
     #{category=>'usort', has_subexpr=>1, text=>'usort(1, [])'}, # not subexpression. won't be parsed as usort(), but ok
 
-    {category=>'usort', has_subexpr=>1, text=>'usort({uc($a) cmp uc($b)}, {})', compiler_run_error=>qr/syntax error|unmatched right/i, js_compiler_run_error=>qr/javascript error/i}, # although doesn't make sense, parses
+    {category=>'usort', has_subexpr=>1, text=>'usort({uc($a) cmp uc($b)}, {})', compiler_run_error=>qr/syntax error|unmatched right/i, js_compiler_run_error=>qr/javascript error/i, php_result=>[]}, # although doesn't make sense, parses. in php {} becomes [].
     {category=>'usort', has_subexpr=>1, text=>'usort({uc($a) cmp uc($b)}, [])', result=>[]},
     {category=>'usort', has_subexpr=>1, text=>'usort({uc($a) cmp uc($b)}, ["B", "a", "C"])', result=>["a", "B", "C"]},
     {category=>'usort', has_subexpr=>1, text=>'usort({ usort({$b <=> $a}, [$a])[0] <=> usort({$b<=>$a}, [$b])[0] }, [3, 2, 1])', result=>[1, 2, 3]}, # nested usort
-    );
+
+    # php compiler still has problems with use()
+    {category=>'usort', has_subexpr=>1, php_skip=>1, text=>'map({$_[0]}, usort( {$a[1]<=>$b[1]}, map({[$_, length($_)]}, ["four", "one", "three"])))', result=>["one", "four", "three"]}, # schwartzian transform, map+usort+map, unnested
+    {category=>'usort', has_subexpr=>1, php_skip=>1, text=>'usort({ map({length($_)}, $a)[0] <=> map({length($_)}, $b)[0] }, [["four"], ["one"], ["three"]])', result=>[["one"], ["four"], ["three"]]}, # map inside usort
+    {category=>'usort', has_subexpr=>1, php_skip=>1, text=>'map({ usort({length($a)<=>length($b)}, $_) }, [["empat", "four"], ["one", "satu"], ["three", "tiga"]])', result=>[["four","empat"], ["one","satu"], ["tiga", "three"]]}, # map inside usort
+
+);
 }
 
 1;

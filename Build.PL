@@ -16,12 +16,13 @@ my %module_build_args = (
     'Steven Haryanto <stevenharyanto@gmail.com>'
   ],
   'dist_name' => 'Language-Expr',
-  'dist_version' => '0.07',
+  'dist_version' => '0.08',
   'license' => 'perl',
   'module_name' => 'Language::Expr',
   'recommends' => {},
   'requires' => {
     'Any::Moose' => '0',
+    'Clone' => '0',
     'File::Which' => '0',
     'JSON' => '0',
     'Mouse' => '0',

@@ -1,6 +1,6 @@
 package Language::Expr::Interpreter::Default;
 BEGIN {
-  $Language::Expr::Interpreter::Default::VERSION = '0.07';
+  $Language::Expr::Interpreter::Default::VERSION = '0.08';
 }
 # ABSTRACT: A default interpreter for Language::Expr
 
@@ -21,7 +21,13 @@ has level => (is => 'rw', default => 0);
 
 
 
-sub rule_pair {
+sub rule_pair_simple {
+    my ($self, %args) = @_;
+    my $match = $args{match};
+    [$match->{key}, $match->{value}];
+}
+
+sub rule_pair_string {
     my ($self, %args) = @_;
     my $match = $args{match};
     [$match->{key}, $match->{value}];
@@ -182,7 +188,12 @@ sub rule_power {
     reduce { $b ** $a } reverse @{$match->{operand}};
 }
 
-sub rule_subscripting {
+sub rule_subscripting_var {
+    my ($self, %args) = @_;
+    $self->rule_subscripting_expr(%args);
+}
+
+sub rule_subscripting_expr {
     my ($self, %args) = @_;
     my $match = $args{match};
     my $res = $match->{operand};
@@ -284,7 +295,7 @@ sub rule_func {
 }
 
 sub _map_grep_usort {
-    my ($which, $self, %args) = @_;
+    my ($self, $which, %args) = @_;
     my $match = $args{match};
     my $ary = $match->{array};
     my $expr = $match->{expr};
@@ -323,15 +334,18 @@ sub _map_grep_usort {
 }
 
 sub rule_func_map {
-    _map_grep_usort('map', @_);
+    my ($self, %args) = @_;
+    $self->_map_grep_usort('map', %args);
 }
 
 sub rule_func_grep {
-    _map_grep_usort('grep', @_);
+    my ($self, %args) = @_;
+    $self->_map_grep_usort('grep', %args);
 }
 
 sub rule_func_usort {
-    _map_grep_usort('usort', @_);
+    my ($self, %args) = @_;
+    $self->_map_grep_usort('usort', %args);
 }
 
 sub rule_parenthesis {}
@@ -358,7 +372,7 @@ Language::Expr::Interpreter::Default - A default interpreter for Language::Expr
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 DESCRIPTION
 

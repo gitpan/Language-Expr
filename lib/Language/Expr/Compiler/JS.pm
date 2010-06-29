@@ -1,25 +1,23 @@
 package Language::Expr::Compiler::JS;
 BEGIN {
-  $Language::Expr::Compiler::JS::VERSION = '0.07';
+  $Language::Expr::Compiler::JS::VERSION = '0.08';
 }
-# ABSTRACT: Compile Language::Expr expression to JS
+# ABSTRACT: Compile Language::Expr expression to JavaScript
 
 use 5.010;
 use Any::Moose;
 with 'Language::Expr::EvaluatorRole';
-extends 'Language::Expr::Evaluator';
-
-use UUID::Tiny ':std';
-use Language::Expr::Interpreter::Default;
+extends 'Language::Expr::Compiler::Base';
 
 
-has todo => (is => 'rw', default => sub { [] });
 
+sub rule_pair_simple {
+    my ($self, %args) = @_;
+    my $match = $args{match};
+    "'$match->{key}':$match->{value}";
+}
 
-has func_mapping => (is => 'rw', default => sub { {} });
-
-
-sub rule_pair {
+sub rule_pair_string {
     my ($self, %args) = @_;
     my $match = $args{match};
     "$match->{key}:$match->{value}";
@@ -37,7 +35,7 @@ sub rule_or_xor {
         elsif ($op eq '//') { @res = ("(function() { let _x = (",
                                       @res, "); return _x==null ? (",
                                       $term, ") : _x })()") }
-        elsif ($op eq '//') { @res = ("(function() { let _a = (",
+        elsif ($op eq '^^') { @res = ("(function() { let _a = (",
                                       @res, "); let _b = ($term); ",
                                       "return _a&&!_b || !_a&&_b ? _a : _b })()") }
     }
@@ -233,7 +231,12 @@ sub rule_power {
     join "", grep {defined} @res;
 }
 
-sub rule_subscripting {
+sub rule_subscripting_var {
+    my ($self, %args) = @_;
+    $self->rule_subscripting_expr(%args);
+}
+
+sub rule_subscripting_expr {
     my ($self, %args) = @_;
     my $match = $args{match};
     my $opd = $match->{operand};
@@ -264,11 +267,11 @@ sub rule_undef {
 }
 
 sub rule_squotestr {
-    __quote(Language::Expr::Interpreter::Default::rule_squotestr(@_));
+    $_[0]->_quote(Language::Expr::Interpreter::Default::rule_squotestr(@_));
 }
 
 sub rule_dquotestr {
-    __quote(Language::Expr::Interpreter::Default::rule_dquotestr(@_));
+    $_[0]->_quote(Language::Expr::Interpreter::Default::rule_dquotestr(@_));
 }
 
 sub rule_bool {
@@ -298,41 +301,48 @@ sub rule_func {
     my $fmap = $self->func_mapping->{$f};
     $f = $fmap if $fmap;
     my $args = $match->{args};
-    if (substr($f, 0, 1) eq '.') {
+    my $fc = substr($f, 0, 1);
+    if ($fc eq '.') {
         my $invoc = shift @$args;
         return "($invoc)$f(".join(", ", @$args).")";
+    } elsif ($fc eq ':') {
+        my $invoc = shift @$args;
+        my $prop = substr($f, 1, length($f)-1);
+        return "($invoc).$prop";
     } else {
         return "$f(".join(", ", @$args).")";
     }
 }
 
 sub _map_grep_usort {
-    my ($which, $self, %args) = @_;
+    my ($self, $which, %args) = @_;
     my $match = $args{match};
     my $ary = $match->{array};
     my $expr = $match->{expr};
 
-    my $todoid = __uuidgen(); # yes, this is not proper
-    push @{ $self->todo }, [$todoid, $expr];
+    my $uuid = $self->new_marker('subexpr', $expr);
     if ($which eq 'map') {
-        return "($ary).map(function(_){ return (TODO-$todoid); })";
+        return "($ary).map(function(_){ return (TODO-$uuid); })";
     } elsif ($which eq 'grep') {
-        return "($ary).filter(function(_){ return (TODO-$todoid); })";
+        return "($ary).filter(function(_){ return (TODO-$uuid); })";
     } elsif ($which eq 'usort') {
-        return "($ary).map(function(x) x).sort(function(a, b){ return (TODO-$todoid); })";
+        return "($ary).map(function(x) x).sort(function(a, b){ return (TODO-$uuid); })";
     }
 }
 
 sub rule_func_map {
-    _map_grep_usort('map', @_);
+    my ($self, %args) = @_;
+    $self->_map_grep_usort('map', %args);
 }
 
 sub rule_func_grep {
-    _map_grep_usort('grep', @_);
+    my ($self, %args) = @_;
+    $self->_map_grep_usort('grep', %args);
 }
 
 sub rule_func_usort {
-    _map_grep_usort('usort', @_);
+    my ($self, %args) = @_;
+    $self->_map_grep_usort('usort', %args);
 }
 
 sub rule_parenthesis {
@@ -351,41 +361,33 @@ sub expr_postprocess {
 
 # can't use regex here (perl segfaults), at least in 5.10.1, because
 # we are in one big re::gr regex.
-sub __quote {
+sub _quote {
+    my ($self, $str) = @_;
     my @c;
-    for my $c (split '', $_[0]) {
+    for my $c (split '', $str) {
         my $o = ord($c);
         if    ($c eq '"') { push @c, '\\"' }
         elsif ($c eq "\\") { push @c, "\\\\" }
         elsif ($o >= 32 && $o <= 127) { push @c, $c }
-        elsif ($o > 255) { push @c, sprintf("\\x{%04x}", $o) }
+        elsif ($o > 255) { push @c, sprintf("\\u%04x", $o) }
         else  { push @c, sprintf("\\x%02x", $o) }
     }
     '"' . join("", @c) . '"';
-}
-
-sub __uuidgen {
-    UUID::Tiny::create_uuid_as_string(UUID_V4);
 }
 
 
 sub js {
     my ($self, $expr) = @_;
     my $res = Language::Expr::Parser::parse_expr($expr, $self);
-    for my $todo (@{ $self->todo }) {
-        my $todoid = $todo->[0];
-        my $subexpr = $todo->[1];
+    for my $m (@{ $self->markers }) {
+        my $type = $m->[0];
+        next unless $type eq 'subexpr';
+        my $uuid = $m->[1];
+        my $subexpr = $m->[2];
         my $subres = Language::Expr::Parser::parse_expr($subexpr, $self);
-        $res =~ s/TODO-$todoid/$subres/g;
+        $res =~ s/TODO-$uuid/$subres/g;
     }
-    $self->todo([]);
-    $res;
-}
-
-sub eval {
-    my ($self, $expr) = @_;
-    my $res = eval $self->js($expr);
-    die $@ if $@;
+    $self->markers([]);
     $res;
 }
 
@@ -398,11 +400,11 @@ __END__
 
 =head1 NAME
 
-Language::Expr::Compiler::JS - Compile Language::Expr expression to JS
+Language::Expr::Compiler::JS - Compile Language::Expr expression to JavaScript
 
 =head1 VERSION
 
-version 0.07
+version 0.08
 
 =head1 SYNOPSIS
 
@@ -410,14 +412,15 @@ version 0.07
  my $jsc = Language::Expr::Compiler::JS->new;
  print $jsc->js('map({$_**2}, [1, 2, 3])'); # prints: [1, 2, 3].map(function(_){ Math.pow(_, 2) })
 
- # map Expr function to JS function/method
+ # map Expr function to JS function/method/property
  $jsc->func_mapping->{ceil} = 'Math.ceil';
  $jsc->func_mapping->{uc} = '.toUpperCase';
+ $jsc->func_mapping->{length} = ':length';
  print $jsc->js(q{uc("party like it's ") . ceil(1998.9)}); # prints: "party like it's ".toUpperCase() + Math.ceil(1998.9)
 
 =head1 DESCRIPTION
 
-Compiles Language::Expr expression to JS code. Some notes:
+Compiles Language::Expr expression to JavaScript code. Some notes:
 
 =over 4
 
@@ -448,33 +451,14 @@ least in 5.10.1).
 E.g. $a becomes a, and so on. Be careful not to make variables which
 are invalid in JavaScript, e.g. $.. or ${foo/bar}.
 
-You can subclass and override rule_var() if you want to provide your
-own variables.
-
 =item * Functions by default simply use Javascript functions.
 
-foo() becomes foo(). Except those mentioned in B<func_mapping>
-(e.g. rand() becomes Math.rand() if func_mapping->{rand} is
-'Math.rand').
-
-Or you can subclass and override rule_func() for more translation
-freedom.
+Except those mentioned in B<func_mapping> (e.g. rand() becomes
+Math.rand() if func_mapping->{rand} is 'Math.rand'). You can also map
+to JavaScript method (using '.meth' syntax) and property (using
+':prop' syntax).
 
 =back
-
-=head1 ATTRIBUTES
-
-=head2 todo => ARRAYREF
-
-Used to remember which subexpression need to be parsed later.
-
-=head2 func_mapping => HASHREF
-
-Mapping from Expr function to JavaScript functions/methods. Example:
-
- { ceil => 'Math.ceil',
-   uc   => '.toUpperCase',
- }
 
 =head1 METHODS
 
