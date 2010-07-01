@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::PHP;
 BEGIN {
-  $Language::Expr::Compiler::PHP::VERSION = '0.08';
+  $Language::Expr::Compiler::PHP::VERSION = '0.09';
 }
 # ABSTRACT: Compile Language::Expr expression to PHP
 
@@ -461,7 +461,7 @@ Language::Expr::Compiler::PHP - Compile Language::Expr expression to PHP
 
 =head1 VERSION
 
-version 0.08
+version 0.09
 
 =head1 SYNOPSIS
 

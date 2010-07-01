@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::Base;
 BEGIN {
-  $Language::Expr::Compiler::Base::VERSION = '0.08';
+  $Language::Expr::Compiler::Base::VERSION = '0.09';
 }
 # ABSTRACT: Base class for Expr compilers
 
@@ -54,7 +54,7 @@ Language::Expr::Compiler::Base - Base class for Expr compilers
 
 =head1 VERSION
 
-version 0.08
+version 0.09
 
 =head1 ATTRIBUTES
 

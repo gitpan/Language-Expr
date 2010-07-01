@@ -1,6 +1,6 @@
 package Language::Expr::Interpreter::Default;
 BEGIN {
-  $Language::Expr::Interpreter::Default::VERSION = '0.08';
+  $Language::Expr::Interpreter::Default::VERSION = '0.09';
 }
 # ABSTRACT: A default interpreter for Language::Expr
 
@@ -372,7 +372,7 @@ Language::Expr::Interpreter::Default - A default interpreter for Language::Expr
 
 =head1 VERSION
 
-version 0.08
+version 0.09
 
 =head1 DESCRIPTION
 
