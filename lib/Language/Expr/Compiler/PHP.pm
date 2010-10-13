@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::PHP;
 BEGIN {
-  $Language::Expr::Compiler::PHP::VERSION = '0.09';
+  $Language::Expr::Compiler::PHP::VERSION = '0.10';
 }
 # ABSTRACT: Compile Language::Expr expression to PHP
 
@@ -461,7 +461,7 @@ Language::Expr::Compiler::PHP - Compile Language::Expr expression to PHP
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 SYNOPSIS
 
@@ -517,7 +517,7 @@ syntax error in expression.
 
 =head1 AUTHOR
 
-  Steven Haryanto <stevenharyanto@gmail.com>
+Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 

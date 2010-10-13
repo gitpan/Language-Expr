@@ -1,6 +1,12 @@
 use boolean;
-use Data::Walk;
+use Data::Rmap qw(:all);
 use Clone qw/clone/;
+
+sub prepare_testing {
+}
+
+sub end_testing {
+}
 
 sub convert_json_booleans {
     #my $arg = shift;
@@ -11,12 +17,7 @@ sub convert_json_booleans {
 
     my $arg = clone(shift);
     #use Data::Dump qw(dump); print "# BEFORE: ", dump($arg), "\n";
-    walk sub {
-        if (ref($_) eq 'JSON::PP::Boolean' || ref($_) eq 'JSON::XS::Boolean') {
-            bless $_, 'boolean';
-        }
-        return;
-    }, $arg;
+    rmap_all { $_ = $_ ? true : false if JSON::is_bool($_) } $arg;
     #print "# AFTER: ", dump($arg), "\n";
     $arg;
 }

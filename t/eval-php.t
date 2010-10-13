@@ -19,11 +19,12 @@ BEGIN {
         eval {
             require File::Which;
             my @paths = File::Which::which("php");
-            ($ENV{PATH}) = $ENV{PATH} =~ /(.*)/;
+            #($ENV{PATH}) = $ENV{PATH} =~ /(.*)/;
+            $ENV{PATH} = "";
             for (@paths) {
                 #print "# DEBUG Testing $_ ...\n";
                 ($_) = /(.*)/;
-                my $output = qx($_ -r 'echo json_encode(call_user_func(function() { return array(1+1); }));') or die;
+                my $output = qx($_ -r 'echo json_encode(call_user_func(function() { return array(1+1); }));');
                 #print "# DEBUG Output: $output\n";
                 if ($output =~ /\A\[2\]$/m) {
                     $PHP_bin = $_;
@@ -31,7 +32,6 @@ BEGIN {
                 }
             }
         };
-        $@ and die $@;
 
         # I haven't tested with PHP or PHP::Interpreter, but last time
         # I checked one of them is still at PHP 5.1. Also the lack of
@@ -44,7 +44,7 @@ BEGIN {
     }
 }
 
-use Test::More tests => 159;
+use Test::More tests => 158;
 use Test::Exception;
 use JSON;
 use Language::Expr::Compiler::PHP;
@@ -131,4 +131,3 @@ for my $t (@stdtests) {
     }
 }
 
-ok(1);

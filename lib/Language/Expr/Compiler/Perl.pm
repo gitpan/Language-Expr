@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::Perl;
 BEGIN {
-  $Language::Expr::Compiler::Perl::VERSION = '0.09';
+  $Language::Expr::Compiler::Perl::VERSION = '0.10';
 }
 # ABSTRACT: Compile Language::Expr expression to Perl
 
@@ -9,6 +9,9 @@ with 'Language::Expr::EvaluatorRole';
 extends 'Language::Expr::Compiler::Base';
 
 use boolean;
+
+
+has hook_var => (is => 'rw');
 
 
 sub rule_pair_simple {
@@ -274,7 +277,11 @@ sub rule_num {
 sub rule_var {
     my ($self, %args) = @_;
     my $match = $args{match};
-    "\$$match->{var}";
+    if ($self->hook_var) {
+        return $self->hook_var->($match->{var});
+    } else {
+        return "\$$match->{var}";
+    }
 }
 
 sub rule_func {
@@ -382,7 +389,7 @@ Language::Expr::Compiler::Perl - Compile Language::Expr expression to Perl
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 SYNOPSIS
 
@@ -431,6 +438,16 @@ $compiler->func_mapping->{foo} = "Foo::do_it", then the expression
 
 =back
 
+=head1 ATTRIBUTES
+
+=head2 hook_var
+
+Can be set to a coderef that will be called during parsing whenever variable is
+encountered. The coderef is expected to return Perl code to handle the variable.
+By default, if this attribute is not set, variable in expression is returned as
+is (e.g. '$foo' becomes '$foo' in Perl), which means some will result in error
+(e.g. '${name that contains some symbols that makes it invalid Perl)').
+
 =head1 METHODS
 
 =for Pod::Coverage ^(rule|expr)_.+
@@ -442,7 +459,7 @@ syntax error in expression.
 
 =head1 AUTHOR
 
-  Steven Haryanto <stevenharyanto@gmail.com>
+Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 

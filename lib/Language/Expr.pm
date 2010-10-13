@@ -1,6 +1,6 @@
 package Language::Expr;
 BEGIN {
-  $Language::Expr::VERSION = '0.09';
+  $Language::Expr::VERSION = '0.10';
 }
 # ABSTRACT: Simple minilanguage for use in expression
 
@@ -75,7 +75,7 @@ Language::Expr - Simple minilanguage for use in expression
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 SYNOPSIS
 
@@ -217,7 +217,7 @@ L<Math::Expression::Evaluator>, L<Language::Farnsworth>
 
 =head1 AUTHOR
 
-  Steven Haryanto <stevenharyanto@gmail.com>
+Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 

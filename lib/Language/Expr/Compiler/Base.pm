@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::Base;
 BEGIN {
-  $Language::Expr::Compiler::Base::VERSION = '0.09';
+  $Language::Expr::Compiler::Base::VERSION = '0.10';
 }
 # ABSTRACT: Base class for Expr compilers
 
@@ -54,7 +54,7 @@ Language::Expr::Compiler::Base - Base class for Expr compilers
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 ATTRIBUTES
 
@@ -87,7 +87,7 @@ Return a regex that matches marker IDs.
 
 =head1 AUTHOR
 
-  Steven Haryanto <stevenharyanto@gmail.com>
+Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 

@@ -2,7 +2,7 @@ NAME
     Language::Expr - Simple minilanguage for use in expression
 
 VERSION
-    version 0.09
+    version 0.10
 
 SYNOPSIS
         use Language::Expr;
@@ -118,7 +118,7 @@ SEE ALSO
     Language::Farnsworth
 
 AUTHOR
-      Steven Haryanto <stevenharyanto@gmail.com>
+    Steven Haryanto <stevenharyanto@gmail.com>
 
 COPYRIGHT AND LICENSE
     This software is copyright (c) 2010 by Steven Haryanto.

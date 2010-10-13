@@ -1,6 +1,6 @@
 package Language::Expr::Interpreter::VarEnumer;
 BEGIN {
-  $Language::Expr::Interpreter::VarEnumer::VERSION = '0.09';
+  $Language::Expr::Interpreter::VarEnumer::VERSION = '0.10';
 }
 # ABSTRACT: Enumerate variables mentioned in Language::Expr expression
 
@@ -116,7 +116,7 @@ Language::Expr::Interpreter::VarEnumer - Enumerate variables mentioned in Langua
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 ATTRIBUTES
 
@@ -138,7 +138,7 @@ Currently $_ in map/grep variables and $a & $b in usort are counted.
 
 =head1 AUTHOR
 
-  Steven Haryanto <stevenharyanto@gmail.com>
+Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 

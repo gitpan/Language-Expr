@@ -19,7 +19,8 @@ BEGIN {
         eval {
             require File::Which;
             my @paths = File::Which::which("js");
-            ($ENV{PATH}) = $ENV{PATH} =~ /(.*)/;
+            #($ENV{PATH}) = $ENV{PATH} =~ /(.*)/;
+            $ENV{PATH} = "";
             for (@paths) {
                 #print "# DEBUG Testing $_ ...\n";
                 ($_) = /(.*)/;
@@ -43,9 +44,8 @@ BEGIN {
     }
 }
 
-use Test::More tests => 162;
+use Test::More tests => 161;
 use Test::Exception;
-use Data::Walk;
 use JSON;
 use Language::Expr::Compiler::JS;
 use String::ShellQuote;
@@ -135,4 +135,3 @@ for my $t (@stdtests) {
     }
 }
 
-ok(1);

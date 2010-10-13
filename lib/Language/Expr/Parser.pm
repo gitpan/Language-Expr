@@ -1,6 +1,6 @@
 package Language::Expr::Parser;
 BEGIN {
-  $Language::Expr::Parser::VERSION = '0.09';
+  $Language::Expr::Parser::VERSION = '0.10';
 }
 # ABSTRACT: Parse Language::Expr expression
 
@@ -200,7 +200,7 @@ Language::Expr::Parser - Parse Language::Expr expression
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 METHODS
 
@@ -210,7 +210,7 @@ Parse expression in $str. Will call various rule_*() methods in $obj.
 
 =head1 AUTHOR
 
-  Steven Haryanto <stevenharyanto@gmail.com>
+Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 

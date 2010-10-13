@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::JS;
 BEGIN {
-  $Language::Expr::Compiler::JS::VERSION = '0.09';
+  $Language::Expr::Compiler::JS::VERSION = '0.10';
 }
 # ABSTRACT: Compile Language::Expr expression to JavaScript
 
@@ -404,7 +404,7 @@ Language::Expr::Compiler::JS - Compile Language::Expr expression to JavaScript
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 SYNOPSIS
 
@@ -471,7 +471,7 @@ is syntax error in expression.
 
 =head1 AUTHOR
 
-  Steven Haryanto <stevenharyanto@gmail.com>
+Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 

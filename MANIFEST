@@ -1,6 +1,8 @@
+Build.PL
 Changes
 LICENSE
 MANIFEST
+MANIFEST.SKIP
 META.yml
 README
 dist.ini
@@ -21,6 +23,7 @@ t/enum_vars.t
 t/eval-js.t
 t/eval-php.t
 t/eval.t
+t/perl-hook_var.t
 t/release-pod-coverage.t
 t/release-pod-syntax.t
 t/stdtests.pl

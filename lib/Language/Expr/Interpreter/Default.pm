@@ -1,6 +1,6 @@
 package Language::Expr::Interpreter::Default;
 BEGIN {
-  $Language::Expr::Interpreter::Default::VERSION = '0.09';
+  $Language::Expr::Interpreter::Default::VERSION = '0.10';
 }
 # ABSTRACT: A default interpreter for Language::Expr
 
@@ -372,7 +372,7 @@ Language::Expr::Interpreter::Default - A default interpreter for Language::Expr
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 DESCRIPTION
 
@@ -415,7 +415,7 @@ Currently subexpression (map/grep/usort) doesn't work yet.
 
 =head1 AUTHOR
 
-  Steven Haryanto <stevenharyanto@gmail.com>
+Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 

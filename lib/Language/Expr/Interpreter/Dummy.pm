@@ -1,6 +1,6 @@
 package Language::Expr::Interpreter::Dummy;
 BEGIN {
-  $Language::Expr::Interpreter::Dummy::VERSION = '0.09';
+  $Language::Expr::Interpreter::Dummy::VERSION = '0.10';
 }
 # ABSTRACT: Dummy interpreter for Language::Expr (used for testing)
 
@@ -53,7 +53,7 @@ Language::Expr::Interpreter::Dummy - Dummy interpreter for Language::Expr (used 
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 DESCRIPTION
 
@@ -67,7 +67,7 @@ This interpreter does nothing. It is used only for testing the parser.
 
 =head1 AUTHOR
 
-  Steven Haryanto <stevenharyanto@gmail.com>
+Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 

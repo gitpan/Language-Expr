@@ -12,7 +12,7 @@ Language::Expr::Manual::Syntax - Description of the Language::Expr language
 
 =head1 VERSION
 
-version 0.09
+version 0.10
 
 =head1 OVERVIEW
 
@@ -266,7 +266,7 @@ of B<$a> and B<$b> will be restored after EXPR completes.
 
 =head1 AUTHOR
 
-  Steven Haryanto <stevenharyanto@gmail.com>
+Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 
