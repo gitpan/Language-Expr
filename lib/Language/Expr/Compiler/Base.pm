@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::Base;
 BEGIN {
-  $Language::Expr::Compiler::Base::VERSION = '0.10';
+  $Language::Expr::Compiler::Base::VERSION = '0.11';
 }
 # ABSTRACT: Base class for Expr compilers
 
@@ -19,6 +19,10 @@ has markers => (is => 'rw', default => sub { [] });
 has func_mapping => (is => 'rw', default => sub { {} });
 
 
+has hook_var => (is => 'rw');
+
+
+
 sub new_marker {
     my ($self, $type, $data) = @_;
     my $uuid = UUID::Tiny::create_uuid_as_string(UUID_V4);
@@ -27,6 +31,7 @@ sub new_marker {
     push @{ $self->markers }, [$type, $uuid, $data];
     $uuid;
 }
+
 
 
 sub marker_ids {
@@ -54,7 +59,7 @@ Language::Expr::Compiler::Base - Base class for Expr compilers
 
 =head1 VERSION
 
-version 0.10
+version 0.11
 
 =head1 ATTRIBUTES
 
@@ -69,6 +74,16 @@ to inward), etc.
 =head2 func_mapping => HASHREF
 
 Map Expr function to target language's function/method/property.
+
+=head1 ATTRIBUTES
+
+=head2 hook_var
+
+Can be set to a coderef that will be called during parsing whenever variable is
+encountered. The coderef is expected to return Perl code to handle the variable.
+By default, if this attribute is not set, variable in expression is returned as
+is (e.g. '$foo' becomes '$foo' in Perl), which means some will result in error
+(e.g. '${name that contains some symbols that makes it invalid Perl)').
 
 =head1 METHODS
 

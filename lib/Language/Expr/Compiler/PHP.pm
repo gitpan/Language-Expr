@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::PHP;
 BEGIN {
-  $Language::Expr::Compiler::PHP::VERSION = '0.10';
+  $Language::Expr::Compiler::PHP::VERSION = '0.11';
 }
 # ABSTRACT: Compile Language::Expr expression to PHP
 
@@ -290,11 +290,22 @@ sub rule_undef {
 }
 
 sub rule_squotestr {
-    $_[0]->_quote(Language::Expr::Interpreter::Default::rule_squotestr(@_));
+    my ($self, %args) = @_;
+    join(" . ",
+         map { $self->_quote($_->{value}) }
+             @{ $self->parse_squotestr($args{match}{part}) });
 }
 
 sub rule_dquotestr {
-    $_[0]->_quote(Language::Expr::Interpreter::Default::rule_dquotestr(@_));
+    my ($self, %args) = @_;
+    "(" .
+    join(" . ",
+         map { $_->{type} eq 'VAR' ?
+                   $self->rule_var(match=>{var=>$_->{value}}) :
+                   $self->_quote($_->{value})
+               }
+             @{ $self->parse_dquotestr($args{match}{part}) }) .
+    ")";
 }
 
 sub rule_bool {
@@ -314,7 +325,11 @@ sub rule_num {
 sub rule_var {
     my ($self, %args) = @_;
     my $match = $args{match};
-    "\$$match->{var}";
+    if ($self->hook_var) {
+        return $self->hook_var->($match->{var});
+    } else {
+        return "\$$match->{var}";
+    }
 }
 
 sub rule_func {
@@ -461,7 +476,7 @@ Language::Expr::Compiler::PHP - Compile Language::Expr expression to PHP
 
 =head1 VERSION
 
-version 0.10
+version 0.11
 
 =head1 SYNOPSIS
 

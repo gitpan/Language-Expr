@@ -1,6 +1,6 @@
 package Language::Expr::Parser;
 BEGIN {
-  $Language::Expr::Parser::VERSION = '0.10';
+  $Language::Expr::Parser::VERSION = '0.11';
 }
 # ABSTRACT: Parse Language::Expr expression
 
@@ -161,8 +161,7 @@ sub parse_expr {
             (?{ $MATCH = $obj->rule_squotestr(match=>\%MATCH) })
 
         <token: dquotestr>
-            "<[part=([^"\044\\]|\$\.\.?|\$\w+|\$\{[^\}]+\}|\\\\|\\'|\\"|\\[tnrfbae\$]|\\[0-7]{1,3}|\\x[0-9A-Fa-f]{1,2}|\\x\{[0-9A-Fa-f]{1,4}\}|\\)]>*"
-#                              ^ can't add + here, segfaults (perl/RG bug?)
+            "<[part=([^"\044\\]+|\$\.\.?|\$\w+|\$\{[^\}]+\}|\\\\|\\'|\\"|\\[tnrfbae\$]|\\[0-7]{1,3}|\\x[0-9A-Fa-f]{1,2}|\\x\{[0-9A-Fa-f]{1,4}\}|\\)]>*"
             (?{ $MATCH = $obj->rule_dquotestr(match=>\%MATCH) })
 
         <rule: var0>
@@ -200,7 +199,7 @@ Language::Expr::Parser - Parse Language::Expr expression
 
 =head1 VERSION
 
-version 0.10
+version 0.11
 
 =head1 METHODS
 

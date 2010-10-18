@@ -1,6 +1,6 @@
 package Language::Expr::Interpreter::Default;
 BEGIN {
-  $Language::Expr::Interpreter::Default::VERSION = '0.10';
+  $Language::Expr::Interpreter::Default::VERSION = '0.11';
 }
 # ABSTRACT: A default interpreter for Language::Expr
 
@@ -225,40 +225,19 @@ sub rule_undef {
 
 sub rule_squotestr {
     my ($self, %args) = @_;
-    my $match = $args{match};
-    join "", map {
-        $_ eq "\\'" ? "'" :
-        $_ eq "\\\\" ? "\\" :
-        $_
-    } @{ $match->{part} };
+    join("",
+         map { $_->{value} }
+             @{ $self->parse_squotestr($args{match}{part}) });
 }
 
 sub rule_dquotestr {
     my ($self, %args) = @_;
-    my $match = $args{match};
-
-    #return join(", ", map {"[$_]"} @{$match->{part}}); #DEBUG
-
-    join "", map {
-        $_ eq "\\'" ? "'" :
-        $_ eq "\\\"" ? '"' :
-        $_ eq "\\\\" ? "\\" :
-        $_ eq "\\\$" ? '$' :
-        $_ eq "\\t" ? "\t" :
-        $_ eq "\\n" ? "\n" :
-        $_ eq "\\f" ? "\f" :
-        $_ eq "\\b" ? "\b" :
-        $_ eq "\\a" ? "\a" :
-        $_ eq "\\e" ? "\e" :
-        $_ eq "\\e" ? "\e" :
-        /^\\([0-7]{1,3})$/ ? chr(oct($1)) :
-        /^\\x([0-9A-Fa-f]{1,2})$/ ? chr(hex($1)) :
-        /^\\x\{([0-9A-Fa-f]{1,4})\}$/ ? chr(hex($1)) :
-        /^\$(\w+)$/ ? $self->vars->{$1} :
-        /^\$\((.+)\)$/ ? $self->vars->{$1} :
-        $_ eq "\\" ? "" :
-        $_
-    } @{ $match->{part} };
+    join("",
+         map { $_->{type} eq 'VAR' ?
+                   $self->rule_var(match=>{var=>$_->{value}}) :
+                   $_->{value}
+               }
+             @{ $self->parse_dquotestr($args{match}{part}) });
 }
 
 sub rule_bool {
@@ -372,7 +351,14 @@ Language::Expr::Interpreter::Default - A default interpreter for Language::Expr
 
 =head1 VERSION
 
-version 0.10
+version 0.11
+
+=head1 SYNOPSIS
+
+ use Language::Expr::Interpreter::Default;
+ my $itp = Language::Expr::Interpreter::Default->new;
+ $itp->vars->{a} = 'A';
+ say $itp->eval(q["$a b" . "c"]); # "A b c"
 
 =head1 DESCRIPTION
 

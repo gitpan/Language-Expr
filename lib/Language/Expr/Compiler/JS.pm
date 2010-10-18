@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::JS;
 BEGIN {
-  $Language::Expr::Compiler::JS::VERSION = '0.10';
+  $Language::Expr::Compiler::JS::VERSION = '0.11';
 }
 # ABSTRACT: Compile Language::Expr expression to JavaScript
 
@@ -267,11 +267,25 @@ sub rule_undef {
 }
 
 sub rule_squotestr {
-    $_[0]->_quote(Language::Expr::Interpreter::Default::rule_squotestr(@_));
+    my ($self, %args) = @_;
+    join(" + ",
+         map { $self->_quote($_->{value}) }
+             @{ $self->parse_squotestr($args{match}{part}) });
 }
 
 sub rule_dquotestr {
-    $_[0]->_quote(Language::Expr::Interpreter::Default::rule_dquotestr(@_));
+    my ($self, %args) = @_;
+    my @tmp =
+        map { $_->{type} eq 'VAR' ?
+                  $self->rule_var(match=>{var=>$_->{value}}) :
+                      $self->_quote($_->{value})
+              }
+            @{ $self->parse_dquotestr($args{match}{part}) };
+    if (@tmp > 1) {
+        "(". join(" + ", @tmp) . ")[0]";
+    } else {
+        $tmp[0];
+    }
 }
 
 sub rule_bool {
@@ -291,7 +305,11 @@ sub rule_num {
 sub rule_var {
     my ($self, %args) = @_;
     my $match = $args{match};
-    "$match->{var}";
+    if ($self->hook_var) {
+        return $self->hook_var->($match->{var});
+    } else {
+        return "$match->{var}";
+    }
 }
 
 sub rule_func {
@@ -404,7 +422,7 @@ Language::Expr::Compiler::JS - Compile Language::Expr expression to JavaScript
 
 =head1 VERSION
 
-version 0.10
+version 0.11
 
 =head1 SYNOPSIS
 

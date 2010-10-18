@@ -1,6 +1,6 @@
 package Language::Expr::Interpreter::VarEnumer;
 BEGIN {
-  $Language::Expr::Interpreter::VarEnumer::VERSION = '0.10';
+  $Language::Expr::Interpreter::VarEnumer::VERSION = '0.11';
 }
 # ABSTRACT: Enumerate variables mentioned in Language::Expr expression
 
@@ -61,8 +61,13 @@ sub rule_dquotestr {
     my $match = $args{match};
 
     for (@{ $match->{part} }) {
-        if    (/^\$(\w+)$/)    { $self->add_var($1) }
-        elsif (/^\$\((.+)\)$/) { $self->add_var($1) }
+        # extract 'foo' from '${foo}'
+        if (substr($_, 0, 2) eq '${') {
+            $self->add_var(substr($_, 2, length()-3));
+        # extract 'foo' from '$foo'
+        } elsif (substr($_, 0, 1) eq '$') {
+            $self->add_var(substr($_, 1, length()-1));
+        }
     }
 }
 
@@ -116,7 +121,7 @@ Language::Expr::Interpreter::VarEnumer - Enumerate variables mentioned in Langua
 
 =head1 VERSION
 
-version 0.10
+version 0.11
 
 =head1 ATTRIBUTES
 

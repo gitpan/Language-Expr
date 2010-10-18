@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::Perl;
 BEGIN {
-  $Language::Expr::Compiler::Perl::VERSION = '0.10';
+  $Language::Expr::Compiler::Perl::VERSION = '0.11';
 }
 # ABSTRACT: Compile Language::Expr expression to Perl
 
@@ -9,9 +9,6 @@ with 'Language::Expr::EvaluatorRole';
 extends 'Language::Expr::Compiler::Base';
 
 use boolean;
-
-
-has hook_var => (is => 'rw');
 
 
 sub rule_pair_simple {
@@ -253,11 +250,25 @@ sub rule_undef {
 }
 
 sub rule_squotestr {
-    $_[0]->_quote(Language::Expr::Interpreter::Default::rule_squotestr(@_));
+    my ($self, %args) = @_;
+    join(" . ",
+         map { $self->_quote($_->{value}) }
+             @{ $self->parse_squotestr($args{match}{part}) });
 }
 
 sub rule_dquotestr {
-    $_[0]->_quote(Language::Expr::Interpreter::Default::rule_dquotestr(@_));
+    my ($self, %args) = @_;
+    my @tmp =
+        map { $_->{type} eq 'VAR' ?
+                  $self->rule_var(match=>{var=>$_->{value}}) :
+                      $self->_quote($_->{value})
+                  }
+            @{ $self->parse_dquotestr($args{match}{part}) };
+    if (@tmp > 1) {
+        "(". join(" . ", @tmp) . ")[0]";
+    } else {
+        $tmp[0];
+    }
 }
 
 sub rule_bool {
@@ -389,7 +400,7 @@ Language::Expr::Compiler::Perl - Compile Language::Expr expression to Perl
 
 =head1 VERSION
 
-version 0.10
+version 0.11
 
 =head1 SYNOPSIS
 
@@ -437,16 +448,6 @@ $compiler->func_mapping->{foo} = "Foo::do_it", then the expression
 'foo(1)' will be compiled into 'Foo::do_it(1)'.
 
 =back
-
-=head1 ATTRIBUTES
-
-=head2 hook_var
-
-Can be set to a coderef that will be called during parsing whenever variable is
-encountered. The coderef is expected to return Perl code to handle the variable.
-By default, if this attribute is not set, variable in expression is returned as
-is (e.g. '$foo' becomes '$foo' in Perl), which means some will result in error
-(e.g. '${name that contains some symbols that makes it invalid Perl)').
 
 =head1 METHODS
 
