@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::Base;
 BEGIN {
-  $Language::Expr::Compiler::Base::VERSION = '0.11';
+  $Language::Expr::Compiler::Base::VERSION = '0.12';
 }
 # ABSTRACT: Base class for Expr compilers
 
@@ -20,6 +20,9 @@ has func_mapping => (is => 'rw', default => sub { {} });
 
 
 has hook_var => (is => 'rw');
+
+
+has hook_func => (is => 'rw');
 
 
 
@@ -59,7 +62,7 @@ Language::Expr::Compiler::Base - Base class for Expr compilers
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 ATTRIBUTES
 
@@ -80,10 +83,25 @@ Map Expr function to target language's function/method/property.
 =head2 hook_var
 
 Can be set to a coderef that will be called during parsing whenever variable is
-encountered. The coderef is expected to return Perl code to handle the variable.
-By default, if this attribute is not set, variable in expression is returned as
-is (e.g. '$foo' becomes '$foo' in Perl), which means some will result in error
-(e.g. '${name that contains some symbols that makes it invalid Perl)').
+encountered. The coderef is called with variable name as argument, and expected
+to return target language code to handle the variable. By default, if this
+attribute is not set, variable in expression is returned as is (e.g. '$foo'
+becomes '$foo' in Perl), which means some will result in error (e.g. '${name that
+contains some symbols that makes it invalid Perl)').
+
+Note that due to current limitation of Perl regex and/or Regexp::Grammars, you
+cannot use any regex in your hook_var.
+
+=head2 hook_func
+
+Can be set to a coderef that will be called during parsing whenever a function
+call is encountered. The coderef is called as its arguments function name and
+list of arguments and expected to return target language code to handle the
+function call. By default, if this attribute is not set, variable in expression
+is returned as is (e.g. 'foo(1, 2, 3)' becomes 'foo(1, 2, 3)' in Perl).
+
+Note that due to current limitation of Perl regex and/or Regexp::Grammars, you
+cannot use any regex in your hook_var.
 
 =head1 METHODS
 

@@ -1,6 +1,6 @@
 package Language::Expr::EvaluatorRole;
 BEGIN {
-  $Language::Expr::EvaluatorRole::VERSION = '0.11';
+  $Language::Expr::EvaluatorRole::VERSION = '0.12';
 }
 # ABSTRACT: Specification for Language::Expr interpreter/compiler
 
@@ -119,7 +119,7 @@ Language::Expr::EvaluatorRole - Specification for Language::Expr interpreter/com
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 METHODS
 
@@ -129,7 +129,7 @@ Instead of parsing parts themselves, consumers can use this method (typically in
 their rule_dquotestr). This method converts each Expr escapes into Perl string
 and variables. For example:
 
- parse_dquotestr('abc\\t\\\\$foo ${bar baz}') -> (
+ parse_dquotestr('abc', "\\t", '\\\\', '$foo', ' ', '${bar baz}') -> (
    {type=>"STR", value=>'abc\t\\'},
    {type=>"VAR", value=>'foo'},
    {type=>"STR", value=>' '},
@@ -142,7 +142,7 @@ Instead of parsing parts themselves, consumers can use this method (typically in
 their rule_squotestr). This method converts Expr single quoted string into Perl
 string.
 
- parse_squotestr('abc\\t\\\\$foo ${bar baz}') -> (
+ parse_dquotestr('abc', "\\t", '\\\\', '$foo', ' ', '${bar baz}') -> (
    {type=>"STR", value=>'abc\t\\$foo ${bar baz}'},
  )
 

@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::JS;
 BEGIN {
-  $Language::Expr::Compiler::JS::VERSION = '0.11';
+  $Language::Expr::Compiler::JS::VERSION = '0.12';
 }
 # ABSTRACT: Compile Language::Expr expression to JavaScript
 
@@ -316,19 +316,23 @@ sub rule_func {
     my ($self, %args) = @_;
     my $match = $args{match};
     my $f = $match->{func_name};
-    my $fmap = $self->func_mapping->{$f};
-    $f = $fmap if $fmap;
     my $args = $match->{args};
-    my $fc = substr($f, 0, 1);
-    if ($fc eq '.') {
-        my $invoc = shift @$args;
-        return "($invoc)$f(".join(", ", @$args).")";
-    } elsif ($fc eq ':') {
-        my $invoc = shift @$args;
-        my $prop = substr($f, 1, length($f)-1);
-        return "($invoc).$prop";
+    if ($self->hook_func) {
+        return $self->hook_func->($f, @$args);
     } else {
-        return "$f(".join(", ", @$args).")";
+        my $fmap = $self->func_mapping->{$f};
+        $f = $fmap if $fmap;
+        my $fc = substr($f, 0, 1);
+        if ($fc eq '.') {
+            my $invoc = shift @$args;
+            return "($invoc)$f(".join(", ", @$args).")";
+        } elsif ($fc eq ':') {
+            my $invoc = shift @$args;
+            my $prop = substr($f, 1, length($f)-1);
+            return "($invoc).$prop";
+        } else {
+            return "$f(".join(", ", @$args).")";
+        }
     }
 }
 
@@ -422,7 +426,7 @@ Language::Expr::Compiler::JS - Compile Language::Expr expression to JavaScript
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 SYNOPSIS
 
@@ -459,15 +463,13 @@ The emitted JS code will follow JavaScript's weak typing and coercion
 rules, e.g. Expr '1+"2"' will simply be translated to JavaScript
 '1+"2"' and will result in "12".
 
-=item * Currently strings are rudimentary escaped.
-
-Data dumping modules can't be used currently due to segfaults (at
-least in 5.10.1).
-
 =item * Variables by default simply use JavaScript variables.
 
 E.g. $a becomes a, and so on. Be careful not to make variables which
 are invalid in JavaScript, e.g. $.. or ${foo/bar}.
+
+You can customize this behaviour by subclassing rule_var() or by providing a
+hook_var() (see documentation in L<Language::Expr::Compiler::Base>).
 
 =item * Functions by default simply use Javascript functions.
 
@@ -475,6 +477,9 @@ Except those mentioned in B<func_mapping> (e.g. rand() becomes
 Math.rand() if func_mapping->{rand} is 'Math.rand'). You can also map
 to JavaScript method (using '.meth' syntax) and property (using
 ':prop' syntax).
+
+You can customize this behaviour by subclassing rule_func() or by providing a
+hook_func() (see documentation in L<Language::Expr::Compiler::Base>).
 
 =back
 

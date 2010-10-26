@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::Perl;
 BEGIN {
-  $Language::Expr::Compiler::Perl::VERSION = '0.11';
+  $Language::Expr::Compiler::Perl::VERSION = '0.12';
 }
 # ABSTRACT: Compile Language::Expr expression to Perl
 
@@ -299,10 +299,14 @@ sub rule_func {
     my ($self, %args) = @_;
     my $match = $args{match};
     my $f = $match->{func_name};
-    my $fmap = $self->func_mapping->{$f};
-    $f = $fmap if $fmap;
     my $args = $match->{args};
-    "$f(".join(", ", @$args).")";
+    if ($self->hook_func) {
+        return $self->hook_func->($f, @$args);
+    } else {
+        my $fmap = $self->func_mapping->{$f};
+        $f = $fmap if $fmap;
+        "$f(".join(", ", @$args).")";
+    }
 }
 
 sub _map_grep_usort {
@@ -400,7 +404,7 @@ Language::Expr::Compiler::Perl - Compile Language::Expr expression to Perl
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 SYNOPSIS
 
@@ -427,25 +431,23 @@ e.g. the expression '"" || "0" || 2' will result to 2 since Perl
 thinks that "" and "0" are false. It is also weakly typed like Perl,
 i.e. allows '1 + "2"' to become 3.
 
-=item * Currently strings are rudimentary escaped.
-
-Data dumping modules can't be used currently due to segfaults (at
-least in 5.10.1).
-
 =item * Variables by default simply use Perl variables.
 
 E.g. $a becomes $a, and so on. Be careful not to make variables which
 are invalid in Perl, e.g. $.. or ${foo/bar} (but ${foo::bar} is okay
 because it translates to $foo::bar).
 
-You can subclass and override rule_var() if you want to provide your
-own variables.
+You can customize this behaviour by subclassing rule_var() or by providing a
+hook_var() (see documentation in L<Language::Expr::Compiler::Base>).
 
 =item * Functions by default simply use Perl functions.
 
 Unless those specified in func_mapping. For example, if
 $compiler->func_mapping->{foo} = "Foo::do_it", then the expression
 'foo(1)' will be compiled into 'Foo::do_it(1)'.
+
+You can customize this behaviour by subclassing rule_func() or by providing a
+hook_func() (see documentation in L<Language::Expr::Compiler::Base>).
 
 =back
 

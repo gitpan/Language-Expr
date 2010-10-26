@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::PHP;
 BEGIN {
-  $Language::Expr::Compiler::PHP::VERSION = '0.11';
+  $Language::Expr::Compiler::PHP::VERSION = '0.12';
 }
 # ABSTRACT: Compile Language::Expr expression to PHP
 
@@ -336,10 +336,14 @@ sub rule_func {
     my ($self, %args) = @_;
     my $match = $args{match};
     my $f = $match->{func_name};
-    my $fmap = $self->func_mapping->{$f};
-    $f = $fmap if $fmap;
     my $args = $match->{args};
-    "$f(".join(", ", @$args).")";
+    if ($self->hook_func) {
+        return $self->hook_func->($f, @$args);
+    } else {
+        my $fmap = $self->func_mapping->{$f};
+        $f = $fmap if $fmap;
+        "$f(".join(", ", @$args).")";
+    }
 }
 
 sub _map_grep_usort {
@@ -476,7 +480,7 @@ Language::Expr::Compiler::PHP - Compile Language::Expr expression to PHP
 
 =head1 VERSION
 
-version 0.11
+version 0.12
 
 =head1 SYNOPSIS
 
@@ -513,11 +517,17 @@ Perl).
 E.g. $a becomes $a, and so on. Be careful not to make variables which
 are invalid in PHP, e.g. $.. or ${foo/bar}.
 
+You can customize this behaviour by subclassing rule_var() or by providing a
+hook_var() (see documentation in L<Language::Expr::Compiler::Base>).
+
 =item * Functions by default simply use PHP functions.
 
 foo() becomes foo(). Except those mentioned in B<func_mapping>
 (e.g. uc() becomes strtoupper() if func_mapping->{uc} is
 'strtoupper').
+
+You can customize this behaviour by subclassing rule_func() or by providing a
+hook_func() (see documentation in L<Language::Expr::Compiler::Base>).
 
 =back
 
