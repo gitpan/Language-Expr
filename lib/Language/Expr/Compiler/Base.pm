@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::Base;
 BEGIN {
-  $Language::Expr::Compiler::Base::VERSION = '0.12';
+  $Language::Expr::Compiler::Base::VERSION = '0.13';
 }
 # ABSTRACT: Base class for Expr compilers
 
@@ -62,7 +62,7 @@ Language::Expr::Compiler::Base - Base class for Expr compilers
 
 =head1 VERSION
 
-version 0.12
+version 0.13
 
 =head1 ATTRIBUTES
 
@@ -89,6 +89,8 @@ attribute is not set, variable in expression is returned as is (e.g. '$foo'
 becomes '$foo' in Perl), which means some will result in error (e.g. '${name that
 contains some symbols that makes it invalid Perl)').
 
+If the coderef returns undef, the default behaviour is used.
+
 Note that due to current limitation of Perl regex and/or Regexp::Grammars, you
 cannot use any regex in your hook_var.
 
@@ -99,6 +101,8 @@ call is encountered. The coderef is called as its arguments function name and
 list of arguments and expected to return target language code to handle the
 function call. By default, if this attribute is not set, variable in expression
 is returned as is (e.g. 'foo(1, 2, 3)' becomes 'foo(1, 2, 3)' in Perl).
+
+If the coderef returns undef, the default behaviour is used.
 
 Note that due to current limitation of Perl regex and/or Regexp::Grammars, you
 cannot use any regex in your hook_var.

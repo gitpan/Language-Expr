@@ -1,6 +1,6 @@
 package Language::Expr;
 BEGIN {
-  $Language::Expr::VERSION = '0.12';
+  $Language::Expr::VERSION = '0.13';
 }
 # ABSTRACT: Simple minilanguage for use in expression
 
@@ -75,7 +75,7 @@ Language::Expr - Simple minilanguage for use in expression
 
 =head1 VERSION
 
-version 0.12
+version 0.13
 
 =head1 SYNOPSIS
 

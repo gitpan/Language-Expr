@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::JS;
 BEGIN {
-  $Language::Expr::Compiler::JS::VERSION = '0.12';
+  $Language::Expr::Compiler::JS::VERSION = '0.13';
 }
 # ABSTRACT: Compile Language::Expr expression to JavaScript
 
@@ -306,10 +306,10 @@ sub rule_var {
     my ($self, %args) = @_;
     my $match = $args{match};
     if ($self->hook_var) {
-        return $self->hook_var->($match->{var});
-    } else {
-        return "$match->{var}";
+        my $res = $self->hook_var->($match->{var});
+        return $res if defined($res);
     }
+    return "$match->{var}";
 }
 
 sub rule_func {
@@ -318,21 +318,21 @@ sub rule_func {
     my $f = $match->{func_name};
     my $args = $match->{args};
     if ($self->hook_func) {
-        return $self->hook_func->($f, @$args);
+        my $res = $self->hook_func->($f, @$args);
+        return $res if defined($res);
+    }
+    my $fmap = $self->func_mapping->{$f};
+    $f = $fmap if $fmap;
+    my $fc = substr($f, 0, 1);
+    if ($fc eq '.') {
+        my $invoc = shift @$args;
+        return "($invoc)$f(".join(", ", @$args).")";
+    } elsif ($fc eq ':') {
+        my $invoc = shift @$args;
+        my $prop = substr($f, 1, length($f)-1);
+        return "($invoc).$prop";
     } else {
-        my $fmap = $self->func_mapping->{$f};
-        $f = $fmap if $fmap;
-        my $fc = substr($f, 0, 1);
-        if ($fc eq '.') {
-            my $invoc = shift @$args;
-            return "($invoc)$f(".join(", ", @$args).")";
-        } elsif ($fc eq ':') {
-            my $invoc = shift @$args;
-            my $prop = substr($f, 1, length($f)-1);
-            return "($invoc).$prop";
-        } else {
-            return "$f(".join(", ", @$args).")";
-        }
+        return "$f(".join(", ", @$args).")";
     }
 }
 
@@ -426,7 +426,7 @@ Language::Expr::Compiler::JS - Compile Language::Expr expression to JavaScript
 
 =head1 VERSION
 
-version 0.12
+version 0.13
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 package Language::Expr::Evaluator;
 BEGIN {
-  $Language::Expr::Evaluator::VERSION = '0.12';
+  $Language::Expr::Evaluator::VERSION = '0.13';
 }
 # ABSTRACT: Base class for Language::Expr compilers and interpreters
 
@@ -27,7 +27,7 @@ Language::Expr::Evaluator - Base class for Language::Expr compilers and interpre
 
 =head1 VERSION
 
-version 0.12
+version 0.13
 
 =head1 METHODS
 
