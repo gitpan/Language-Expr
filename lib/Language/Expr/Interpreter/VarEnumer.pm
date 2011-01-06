@@ -1,6 +1,6 @@
 package Language::Expr::Interpreter::VarEnumer;
 BEGIN {
-  $Language::Expr::Interpreter::VarEnumer::VERSION = '0.13';
+  $Language::Expr::Interpreter::VarEnumer::VERSION = '0.14';
 }
 # ABSTRACT: Enumerate variables mentioned in Language::Expr expression
 
@@ -121,7 +121,7 @@ Language::Expr::Interpreter::VarEnumer - Enumerate variables mentioned in Langua
 
 =head1 VERSION
 
-version 0.13
+version 0.14
 
 =head1 ATTRIBUTES
 
@@ -147,7 +147,7 @@ Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Steven Haryanto.
+This software is copyright (c) 2011 by Steven Haryanto.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

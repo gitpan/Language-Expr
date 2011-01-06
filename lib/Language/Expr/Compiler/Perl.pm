@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::Perl;
 BEGIN {
-  $Language::Expr::Compiler::Perl::VERSION = '0.13';
+  $Language::Expr::Compiler::Perl::VERSION = '0.14';
 }
 # ABSTRACT: Compile Language::Expr expression to Perl
 
@@ -404,7 +404,7 @@ Language::Expr::Compiler::Perl - Compile Language::Expr expression to Perl
 
 =head1 VERSION
 
-version 0.13
+version 0.14
 
 =head1 SYNOPSIS
 
@@ -466,7 +466,7 @@ Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Steven Haryanto.
+This software is copyright (c) 2011 by Steven Haryanto.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

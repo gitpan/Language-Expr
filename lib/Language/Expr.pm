@@ -1,6 +1,6 @@
 package Language::Expr;
 BEGIN {
-  $Language::Expr::VERSION = '0.13';
+  $Language::Expr::VERSION = '0.14';
 }
 # ABSTRACT: Simple minilanguage for use in expression
 
@@ -75,20 +75,62 @@ Language::Expr - Simple minilanguage for use in expression
 
 =head1 VERSION
 
-version 0.13
+version 0.14
 
 =head1 SYNOPSIS
 
+    use 5.010;
     use Language::Expr;
-    my $le = new Language::Expr;
-    $le->var('a' => 1, 'b' => 2);
-    $le->func(sqr => sub { $_[0] ** 2 }, rand => sub {rand()});
+    my $le = Language::Expr->new;
 
-    # evaluate expression
-    say $le->eval('$a + sqr($b)'); # 5
+    # evaluate expressions
+    say $le->eval('1 + 2*3 + [4, 5][-1]'); # 12
+    say $le->eval(q("i" . " love " .
+                    {lang=>"perl", food=>"rujak"}["lang"])); # "i love perl"
+
+    # convert Expr to Perl
+    use Language::Expr::Compiler::Perl;
+    my $perl = Language::Expr::Compiler::Perl->new;
+    say $perl->perl('1 ^^ 2'); # "(1 xor 2)"
+
+    # convert Expr to JavaScript
+    use Language::Expr::Compiler::JS;
+    my $js = Language::Expr::Compiler::JS->new;
+    say $js->js('1 . 2'); # "'' + 1 + 2"
+
+    # use variables & functions in expression (interpreted mode)
+    $le->interpreted(1);
+    $le->var('a' => 3, 'b' => 4);
+    $le->func(pyth => sub { ($_[0]**2 + $_[1]**2)**0.5 });
+    say $le->eval('pyth($a, $b)'); # 5
+
+    # use variables & functions in expression (compiled mode, by default the Perl
+    # compiler translates variables and function call as-is and runs it in
+    # Language::Expr::Compiler::Perl namespace, but you can customize this)
+    $le->interpreted(0);
+    package Language::Expr::Compiler::Perl;
+    sub pyth { ($_[0]**2 + $_[1]**2)**0.5 }
+    our $a = 3;
+    our $b = 4;
+    package main;
+    say $le->compiler->perl('pyth($a, $b)'); # "pyth($a, $b)"
+    say $le->eval('pyth($a, $b)'); # 5
+
+    # tell compiler to use My namespace, translate 'func()' to 'My::func()' and
+    # '$var' to '$My::var'
+    package My;
+    sub pyth { sprintf("%.03f", ($_[0]**2 + $_[1]**2)**0.5) }
+    our $a = 3;
+    our $b = 4;
+    package main;
+    $le->compiler->hook_var (sub { '$My::'.$_[0] });
+    $le->compiler->hook_func(sub { 'My::'.shift."(".join(", ", @_).")" });
+    say $le->compiler->perl('pyth($a, $b)'); # "My::pyth($My::a, $My::b)"
+    say $le->eval('pyth($a, $b)'); # "5.000"
 
     # enumerate variables
-    say $le->enum_vars('$a*$a + sqr($b)'); # ['a', 'b']
+    use Data::Dump;
+    dd $le->enum_vars('$a*$a + sqr($b)'); # ['a', 'b']
 
 =head1 DESCRIPTION
 
@@ -154,21 +196,20 @@ Enumerate variables mentioned in expression STR. Return empty arrayref
 
 =head2 Why yet another simplistic (restricted, etc) language? Why not just Perl?
 
-When first adding expression support to L<Data::Schema>, I want a
-language that is simple enough so I can easily convert it to Perl,
-PHP, JavaScript, and others. I do not need a fully-fledged programming
-languag. In fact, Expr is not even Turing-complete, it does not
-support assignment or loops. Nor does it allow function definition
-(though it allows anonymous function in grep/map/usort). Instead, I
-just need some basic stuffs like mathematical/string/logical
-operators, arrays, hashes, functions, map/grep/usort. This language
-will mostly be used inside templates and schemas.
+When first adding expression support to L<Data::Schema> (now L<Data::Sah>), I
+want a language that is simple enough so I can easily convert it to Perl, PHP,
+JavaScript, and others. I do not need a fully-fledged programming language. In
+fact, Expr is not even Turing-complete, it does not support assignment or loops.
+Nor does it allow function definition (though it allows anonymous function in
+grep/map/usort). Instead, I just need some basic stuffs like
+mathematical/string/logical operators, arrays, hashes, functions, map/grep/usort.
+This language will mostly be used inside templates and schemas.
 
 =head2 Why don't you use Language::Farnsworth, or Math::Expression, or Math::Expression::Evaluator, or $FOO?
 
 I need several compilers and interpreters (some even with different
 semantics), so that it's easier to start with a simple parser of my
-own. And of course there are personal preference of language syntax.
+own. And of course there is personal preference of language syntax.
 
 =head2 I want different syntax for (variables, foo operator, etc)!
 
@@ -177,11 +218,10 @@ modifying the Language::Expr::Parser module.
 
 =head2 The parser is too slow!
 
-I personally am not having problem with performance. In fact,
-L<Regexp::Grammmars> should be much faster than
-L<Parse::RecDescent>. If you need faster parsing speed you can take a
-look at reimplementing the parser using L<Parse::Yapp>,
-L<Parse::Eyapp>, etc.
+I personally am not having problem with compile performance. In fact,
+L<Regexp::Grammmars> should be much faster than L<Parse::RecDescent>. If you need
+faster parsing speed you can take a look at reimplementing the parser using
+L<Parse::Yapp>, L<Parse::Eyapp>, etc.
 
 If you are having performance runtime problem, try switching from
 using the interpreter to using one of the available compilers.
@@ -202,15 +242,14 @@ See L<Language::Expr::Compiler::JS>.
 
 Due to possible bugs in Perl's RE engine or Regexp::Grammars or my
 grammar, some syntax errors will cause further parsing to
-fail. Variable interpolation inside double quoted strings also doesn't
-work yet (segfaults).
+fail.
 
 =head1 SEE ALSO
 
 Syntax reference: L<Language::Expr::Manual::Syntax>
 
-Modules that are using Language::Expr: L<Data::Schema>,
-L<Data::Template::Expr>.
+Modules that are using Language::Expr: L<Data::Sah>,
+L<Data::Template::Expr> (not yet released).
 
 Other related modules: L<Math::Expression>,
 L<Math::Expression::Evaluator>, L<Language::Farnsworth>
@@ -221,7 +260,7 @@ Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2010 by Steven Haryanto.
+This software is copyright (c) 2011 by Steven Haryanto.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
