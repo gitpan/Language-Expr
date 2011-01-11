@@ -12,7 +12,7 @@ Language::Expr::Manual::Syntax - Description of the Language::Expr language
 
 =head1 VERSION
 
-version 0.14
+version 0.15
 
 =head1 OVERVIEW
 
@@ -45,6 +45,9 @@ Ruby).
  -2.3
  inf
  nan
+ 0x1f    # hexadecimal, = 31 in decimal
+ 0o17    # octal, = 15 in decimal
+ 0b100   # binary, = 4 in decimal
 
 =head2 String
 

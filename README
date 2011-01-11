@@ -2,10 +2,12 @@ NAME
     Language::Expr - Simple minilanguage for use in expression
 
 VERSION
-    version 0.14
+    version 0.15
 
 SYNOPSIS
         use 5.010;
+        use strict;
+        use warnings;
         use Language::Expr;
         my $le = Language::Expr->new;
 
@@ -14,15 +16,18 @@ SYNOPSIS
         say $le->eval(q("i" . " love " .
                         {lang=>"perl", food=>"rujak"}["lang"])); # "i love perl"
 
-        # convert Expr to Perl
-        use Language::Expr::Compiler::Perl;
-        my $perl = Language::Expr::Compiler::Perl->new;
-        say $perl->perl('1 ^^ 2'); # "(1 xor 2)"
+        # convert Expr to Perl (string Perl code)
+        say $le->perl('1 ^^ 2'); # "(1 xor 2)"
 
         # convert Expr to JavaScript
-        use Language::Expr::Compiler::JS;
-        my $js = Language::Expr::Compiler::JS->new;
-        say $js->js('1 . 2'); # "'' + 1 + 2"
+        say $le->js('1 . 2'); # "'' + 1 + 2"
+
+        # convert Expr to PHP
+        say $le->php('"x" x 10'); # "str_repeat(('x'), 10)"
+
+        # convert Expr to compiled Perl code
+        my $sub = $le->compile('($_[0]**2 + $_[1]**2)**0.5');
+        say $sub->(3, 4); # 5
 
         # use variables & functions in expression (interpreted mode)
         $le->interpreted(1);
@@ -32,7 +37,8 @@ SYNOPSIS
 
         # use variables & functions in expression (compiled mode, by default the Perl
         # compiler translates variables and function call as-is and runs it in
-        # Language::Expr::Compiler::Perl namespace, but you can customize this)
+        # Language::Expr::Compiler::Perl namespace, but you can customize this, see
+        # below)
         $le->interpreted(0);
         package Language::Expr::Compiler::Perl;
         sub pyth { ($_[0]**2 + $_[1]**2)**0.5 }
@@ -50,7 +56,7 @@ SYNOPSIS
         our $b = 4;
         package main;
         $le->compiler->hook_var (sub { '$My::'.$_[0] });
-        $le->compiler->hook_func(sub { 'My::'.shift."(".join(", ", @_).")" });
+        $le->compiler->hook_func(sub { 'My::'.(shift)."(".join(", ", @_).")" });
         say $le->compiler->perl('pyth($a, $b)'); # "My::pyth($My::a, $My::b)"
         say $le->eval('pyth($a, $b)'); # "5.000"
 
@@ -77,29 +83,75 @@ ATTRIBUTES
     means Language::Expr expression will be compiled to Perl code first
     before executed).
 
+    Note: The compiler is used by default because the interpreter currently
+    lacks subexpression (map/grep/sort) support. But the compiler cannot by
+    default directly use variables and functions defined by var() and
+    func(). This slight inconvenience might be rectified in the future.
+
   interpreter => OBJ
     The Language::Expr::Interpreter::Default instance.
 
   compiler => OBJ
     The Language::Expr::Compiler::Perl instance.
 
+  js_compiler => OBJ
+    The Language::Expr::Compiler::JS instance. Will only be loaded on
+    demand.
+
+  php_compiler => OBJ
+    The Language::Expr::Compiler::PHP instance. Will only be loaded on
+    demand.
+
   varenumer => OBJ
     The Language::Expr::Interpreter::VarEnumer instance.
 
 METHODS
   new()
-    Construct a new Language::Expr object.
+    Construct a new Language::Expr object, which is just a convenient
+    front-end of the Expr parser, compilers, and interpreters. You can also
+    use the parser/compiler/interpreter independently.
 
   var(NAME => VALUE, ...)
-    Define variables.
+    Define variables. Note that variables are only directly usable in
+    interpreted mode (see SYNOPSIS for example on how to use variables in
+    compiled mode).
 
   func(NAME => CODEREF, ...)
-    Define functions. Dies if function is defined multiple times.
+    Define functions. Dies if function is defined multiple times. Note that
+    functions are only directly usable in interpreted mode (see SYNOPSIS for
+    example on how to use functions in compiled mode).
 
   eval(STR) => RESULT
-    Evaluate expression in STR and return the result. Will die if there is a
-    parsing or runtime error. By default it uses the compiler unless you set
-    "interpreted" to 1.
+    Evaluate expression in STR (either using the compiler or interpreter)
+    and return the result. Will die if there is a parsing or runtime error.
+    By default it uses the compiler unless you set "interpreted" to 1.
+
+    Also see compile() which will always use the compiler regardless of
+    "interpreted" setting, and will save compilation result into a Perl
+    subroutine (thus is more efficient if you need to evaluate an expression
+    repeatedly).
+
+  perl(STR) => STR
+    Convert expression in STR and return a string Perl code. Dies on error.
+    Internally just call $le->compiler->perl().
+
+  js(STR) => STR
+    Convert expression in STR and return a string JavaScript code. Dies on
+    error. Internally just call $le->js_compiler->js().
+
+  php(STR) => STR
+    Convert expression in STR and return a string PHP code. Dies on error.
+    Internally just call $le->php_compiler->php().
+
+  compile(STR) => CODEREF
+    Compile expression in STR into Perl subroutine. Dies on error. See also
+    eval().
+
+    Inside the expression, you can use '$_[0]', '$_[1]', etc to access the
+    subroutine's arguments, because compile() sets $_ to @_. Example:
+
+     my $sub = $le->compile('($_[0]**2 + $_[1]**2)**0.5');
+     say $sub->(3, 4); # 5
 
   enum_vars(STR) => ARRAYREF
     Enumerate variables mentioned in expression STR. Return empty arrayref
@@ -122,27 +174,27 @@ FAQ
     semantics), so that it's easier to start with a simple parser of my own.
     And of course there is personal preference of language syntax.
 
+  What is the difference between a compiler and interpreter?
+    An interpreter evaluates expression as it is being parsed, while a
+    compiler generates a complete Perl (or whatever) code first. Thus, if
+    you $le->eval() repeatedly using the interpreter mode (setting
+    $le->interpreted(1)), you will repeatedly parse the expression each
+    time. This can be one or more orders of magnitude slower compared to
+    compiling into Perl once and then directly executing the Perl code
+    repeatedly.
+
+    Note that if you use $le->eval() using the default compiler mode, you do
+    not reap the benefits of compilation because the expression will be
+    compiled each time you call $le->eval(). To save the compilation result,
+    use $le->compile() or $le->perl() and compile the Perl code yourself
+    using Perl's eval().
+
   I want different syntax for (variables, foo operator, etc)!
     Create your own language :-) Fork this distribution and start modifying
     the Language::Expr::Parser module.
 
-  The parser is too slow!
-    I personally am not having problem with compile performance. In fact,
-    Regexp::Grammmars should be much faster than Parse::RecDescent. If you
-    need faster parsing speed you can take a look at reimplementing the
-    parser using Parse::Yapp, Parse::Eyapp, etc.
-
-    If you are having performance runtime problem, try switching from using
-    the interpreter to using one of the available compilers.
-
   How to show details of errors in expression?
     This is a TODO item.
-
-  How to convert Expr expression into Perl code?
-    See Language::Expr::Compiler::Perl.
-
-  How to convert Expr expression into JavaScript code?
-    See Language::Expr::Compiler::JS.
 
 BUGS
     Due to possible bugs in Perl's RE engine or Regexp::Grammars or my

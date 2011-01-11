@@ -1,6 +1,6 @@
 package Language::Expr::Parser;
 BEGIN {
-  $Language::Expr::Parser::VERSION = '0.14';
+  $Language::Expr::Parser::VERSION = '0.15';
 }
 # ABSTRACT: Parse Language::Expr expression
 
@@ -149,8 +149,17 @@ sub parse_expr {
             (?{ $MATCH = $obj->rule_bool(match=>\%MATCH) })
 
         <token: num0>
-            <num=( [+-]? \d++ (?: \. \d++ )?+ | inf | nan )>
-            (?{ $MATCH = $obj->rule_num(match=>{num=>$MATCH{num}}) })
+            <sign0a=([+-]?)> 0x <num0a=([0-9A-Fa-f]++)>
+            (?{ $MATCH = $obj->rule_num(match=>{num=>
+                ($MATCH{sign0a} eq '-' ? -1:1) * hex($MATCH{num0a})}) })
+          | <sign0b=([+-]?)> 0o <num0b=([0-7]++)>
+            (?{ $MATCH = $obj->rule_num(match=>{num=>
+                ($MATCH{sign0b} eq '-' ? -1:1) * oct($MATCH{num0b})}) })
+          | <sign0c=([+-]?)> 0b <num0c=([0-1]++)>
+            (?{ $MATCH = $obj->rule_num(match=>{num=>
+                ($MATCH{sign0c} eq '-' ? -1:1) * oct("0b".$MATCH{num0c})}) })
+          | <num0c=( [+-]?\d++(?:\.\d++)?+ | inf | nan)>
+            (?{ $MATCH = $obj->rule_num(match=>{num=>$MATCH{num0c}}) })
 
         <rule: str0>
             <MATCH=squotestr>
@@ -199,7 +208,7 @@ Language::Expr::Parser - Parse Language::Expr expression
 
 =head1 VERSION
 
-version 0.14
+version 0.15
 
 =head1 METHODS
 

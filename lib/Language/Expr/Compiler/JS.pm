@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::JS;
 BEGIN {
-  $Language::Expr::Compiler::JS::VERSION = '0.14';
+  $Language::Expr::Compiler::JS::VERSION = '0.15';
 }
 # ABSTRACT: Compile Language::Expr expression to JavaScript
 
@@ -426,7 +426,7 @@ Language::Expr::Compiler::JS - Compile Language::Expr expression to JavaScript
 
 =head1 VERSION
 
-version 0.14
+version 0.15
 
 =head1 SYNOPSIS
 

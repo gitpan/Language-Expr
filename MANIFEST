@@ -19,6 +19,7 @@ lib/Language/Expr/Interpreter/VarEnumer.pm
 lib/Language/Expr/Manual/Syntax.pod
 lib/Language/Expr/Parser.pm
 t/00-compile.t
+t/01-basics.t
 t/enum_vars.t
 t/eval-js.t
 t/eval-php.t

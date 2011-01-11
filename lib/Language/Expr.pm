@@ -1,6 +1,6 @@
 package Language::Expr;
 BEGIN {
-  $Language::Expr::VERSION = '0.14';
+  $Language::Expr::VERSION = '0.15';
 }
 # ABSTRACT: Simple minilanguage for use in expression
 
@@ -23,6 +23,14 @@ has interpreter => (
 has compiler => (
     is => 'ro',
     default => sub { Language::Expr::Compiler::Perl->new });
+
+
+has js_compiler => (
+    is => 'rw');
+
+
+has php_compiler => (
+    is => 'rw');
 
 
 has varenumer => (
@@ -57,6 +65,42 @@ sub eval {
 }
 
 
+sub perl {
+    my ($self, $str) = @_;
+    $self->compiler->perl($str);
+}
+
+
+sub js {
+    my ($self, $str) = @_;
+    unless ($self->js_compiler) {
+        require Language::Expr::Compiler::JS;
+        $self->js_compiler(Language::Expr::Compiler::JS->new);
+    }
+    $self->js_compiler->js($str);
+}
+
+
+sub php {
+    my ($self, $str) = @_;
+    unless ($self->php_compiler) {
+        require Language::Expr::Compiler::PHP;
+        $self->php_compiler(Language::Expr::Compiler::PHP->new);
+    }
+    $self->php_compiler->php($str);
+}
+
+
+sub compile {
+    my ($self, $str) = @_;
+    my $s = $self->perl($str);
+    # the '$_ = \@_' trick is to make '$_[0]' in expression work like in Perl
+    my $sub = eval qq(sub { local \$_ = \\\@_; $s });
+    die $@ if $@;
+    $sub;
+}
+
+
 sub enum_vars {
     my ($self, $str) = @_;
     $self->varenumer->eval($str);
@@ -75,11 +119,13 @@ Language::Expr - Simple minilanguage for use in expression
 
 =head1 VERSION
 
-version 0.14
+version 0.15
 
 =head1 SYNOPSIS
 
     use 5.010;
+    use strict;
+    use warnings;
     use Language::Expr;
     my $le = Language::Expr->new;
 
@@ -88,15 +134,18 @@ version 0.14
     say $le->eval(q("i" . " love " .
                     {lang=>"perl", food=>"rujak"}["lang"])); # "i love perl"
 
-    # convert Expr to Perl
-    use Language::Expr::Compiler::Perl;
-    my $perl = Language::Expr::Compiler::Perl->new;
-    say $perl->perl('1 ^^ 2'); # "(1 xor 2)"
+    # convert Expr to Perl (string Perl code)
+    say $le->perl('1 ^^ 2'); # "(1 xor 2)"
 
     # convert Expr to JavaScript
-    use Language::Expr::Compiler::JS;
-    my $js = Language::Expr::Compiler::JS->new;
-    say $js->js('1 . 2'); # "'' + 1 + 2"
+    say $le->js('1 . 2'); # "'' + 1 + 2"
+
+    # convert Expr to PHP
+    say $le->php('"x" x 10'); # "str_repeat(('x'), 10)"
+
+    # convert Expr to compiled Perl code
+    my $sub = $le->compile('($_[0]**2 + $_[1]**2)**0.5');
+    say $sub->(3, 4); # 5
 
     # use variables & functions in expression (interpreted mode)
     $le->interpreted(1);
@@ -106,7 +155,8 @@ version 0.14
 
     # use variables & functions in expression (compiled mode, by default the Perl
     # compiler translates variables and function call as-is and runs it in
-    # Language::Expr::Compiler::Perl namespace, but you can customize this)
+    # Language::Expr::Compiler::Perl namespace, but you can customize this, see
+    # below)
     $le->interpreted(0);
     package Language::Expr::Compiler::Perl;
     sub pyth { ($_[0]**2 + $_[1]**2)**0.5 }
@@ -124,7 +174,7 @@ version 0.14
     our $b = 4;
     package main;
     $le->compiler->hook_var (sub { '$My::'.$_[0] });
-    $le->compiler->hook_func(sub { 'My::'.shift."(".join(", ", @_).")" });
+    $le->compiler->hook_func(sub { 'My::'.(shift)."(".join(", ", @_).")" });
     say $le->compiler->perl('pyth($a, $b)'); # "My::pyth($My::a, $My::b)"
     say $le->eval('pyth($a, $b)'); # "5.000"
 
@@ -155,6 +205,11 @@ Whether to use the interpreter. By default is 0 (use the compiler,
 which means Language::Expr expression will be compiled to Perl code
 first before executed).
 
+Note: The compiler is used by default because the interpreter currently lacks
+subexpression (map/grep/sort) support. But the compiler cannot by default
+directly use variables and functions defined by var() and func(). This slight
+inconvenience might be rectified in the future.
+
 =head2 interpreter => OBJ
 
 The Language::Expr::Interpreter::Default instance.
@@ -162,6 +217,14 @@ The Language::Expr::Interpreter::Default instance.
 =head2 compiler => OBJ
 
 The Language::Expr::Compiler::Perl instance.
+
+=head2 js_compiler => OBJ
+
+The Language::Expr::Compiler::JS instance. Will only be loaded on demand.
+
+=head2 php_compiler => OBJ
+
+The Language::Expr::Compiler::PHP instance. Will only be loaded on demand.
 
 =head2 varenumer => OBJ
 
@@ -171,21 +234,55 @@ The Language::Expr::Interpreter::VarEnumer instance.
 
 =head2 new()
 
-Construct a new Language::Expr object.
+Construct a new Language::Expr object, which is just a convenient front-end of
+the Expr parser, compilers, and interpreters. You can also use the
+parser/compiler/interpreter independently.
 
 =head2 var(NAME => VALUE, ...)
 
-Define variables.
+Define variables. Note that variables are only directly usable in interpreted
+mode (see SYNOPSIS for example on how to use variables in compiled mode).
 
 =head2 func(NAME => CODEREF, ...)
 
-Define functions. Dies if function is defined multiple times.
+Define functions. Dies if function is defined multiple times. Note that
+functions are only directly usable in interpreted mode (see SYNOPSIS for example
+on how to use functions in compiled mode).
 
 =head2 eval(STR) => RESULT
 
-Evaluate expression in STR and return the result. Will die if there is
-a parsing or runtime error. By default it uses the compiler unless you
-set C<interpreted> to 1.
+Evaluate expression in STR (either using the compiler or interpreter) and return
+the result. Will die if there is a parsing or runtime error. By default it uses
+the compiler unless you set C<interpreted> to 1.
+
+Also see compile() which will always use the compiler regardless of
+C<interpreted> setting, and will save compilation result into a Perl subroutine
+(thus is more efficient if you need to evaluate an expression repeatedly).
+
+=head2 perl(STR) => STR
+
+Convert expression in STR and return a string Perl code. Dies on error.
+Internally just call $le->compiler->perl().
+
+=head2 js(STR) => STR
+
+Convert expression in STR and return a string JavaScript code. Dies on error.
+Internally just call $le->js_compiler->js().
+
+=head2 php(STR) => STR
+
+Convert expression in STR and return a string PHP code. Dies on error.
+Internally just call $le->php_compiler->php().
+
+=head2 compile(STR) => CODEREF
+
+Compile expression in STR into Perl subroutine. Dies on error. See also eval().
+
+Inside the expression, you can use '$_[0]', '$_[1]', etc to access the
+subroutine's arguments, because compile() sets $_ to @_. Example:
+
+ my $sub = $le->compile('($_[0]**2 + $_[1]**2)**0.5');
+ say $sub->(3, 4); # 5
 
 =head2 enum_vars(STR) => ARRAYREF
 
@@ -211,32 +308,28 @@ I need several compilers and interpreters (some even with different
 semantics), so that it's easier to start with a simple parser of my
 own. And of course there is personal preference of language syntax.
 
+=head2 What is the difference between a compiler and interpreter?
+
+An interpreter evaluates expression as it is being parsed, while a compiler
+generates a complete Perl (or whatever) code first. Thus, if you $le->eval()
+repeatedly using the interpreter mode (setting $le->interpreted(1)), you will
+repeatedly parse the expression each time. This can be one or more orders of
+magnitude slower compared to compiling into Perl once and then directly
+executing the Perl code repeatedly.
+
+Note that if you use $le->eval() using the default compiler mode, you do not
+reap the benefits of compilation because the expression will be compiled each
+time you call $le->eval(). To save the compilation result, use $le->compile() or
+$le->perl() and compile the Perl code yourself using Perl's eval().
+
 =head2 I want different syntax for (variables, foo operator, etc)!
 
 Create your own language :-) Fork this distribution and start
 modifying the Language::Expr::Parser module.
 
-=head2 The parser is too slow!
-
-I personally am not having problem with compile performance. In fact,
-L<Regexp::Grammmars> should be much faster than L<Parse::RecDescent>. If you need
-faster parsing speed you can take a look at reimplementing the parser using
-L<Parse::Yapp>, L<Parse::Eyapp>, etc.
-
-If you are having performance runtime problem, try switching from
-using the interpreter to using one of the available compilers.
-
 =head2 How to show details of errors in expression?
 
 This is a TODO item.
-
-=head2 How to convert Expr expression into Perl code?
-
-See L<Language::Expr::Compiler::Perl>.
-
-=head2 How to convert Expr expression into JavaScript code?
-
-See L<Language::Expr::Compiler::JS>.
 
 =head1 BUGS
 
