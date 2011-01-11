@@ -1,6 +1,6 @@
 package Language::Expr;
 BEGIN {
-  $Language::Expr::VERSION = '0.15';
+  $Language::Expr::VERSION = '0.16';
 }
 # ABSTRACT: Simple minilanguage for use in expression
 
@@ -119,7 +119,7 @@ Language::Expr - Simple minilanguage for use in expression
 
 =head1 VERSION
 
-version 0.15
+version 0.16
 
 =head1 SYNOPSIS
 
@@ -163,7 +163,7 @@ version 0.15
     our $a = 3;
     our $b = 4;
     package main;
-    say $le->compiler->perl('pyth($a, $b)'); # "pyth($a, $b)"
+    say $le->perl('pyth($a, $b)'); # "pyth($a, $b)"
     say $le->eval('pyth($a, $b)'); # 5
 
     # tell compiler to use My namespace, translate 'func()' to 'My::func()' and
@@ -175,7 +175,7 @@ version 0.15
     package main;
     $le->compiler->hook_var (sub { '$My::'.$_[0] });
     $le->compiler->hook_func(sub { 'My::'.(shift)."(".join(", ", @_).")" });
-    say $le->compiler->perl('pyth($a, $b)'); # "My::pyth($My::a, $My::b)"
+    say $le->perl('pyth($a, $b)'); # "My::pyth($My::a, $My::b)"
     say $le->eval('pyth($a, $b)'); # "5.000"
 
     # enumerate variables
@@ -212,23 +212,23 @@ inconvenience might be rectified in the future.
 
 =head2 interpreter => OBJ
 
-The Language::Expr::Interpreter::Default instance.
+Store the Language::Expr::Interpreter::Default instance.
 
 =head2 compiler => OBJ
 
-The Language::Expr::Compiler::Perl instance.
+Store the Language::Expr::Compiler::Perl instance.
 
 =head2 js_compiler => OBJ
 
-The Language::Expr::Compiler::JS instance. Will only be loaded on demand.
+Store the Language::Expr::Compiler::JS instance.
 
 =head2 php_compiler => OBJ
 
-The Language::Expr::Compiler::PHP instance. Will only be loaded on demand.
+Store the Language::Expr::Compiler::PHP instance.
 
 =head2 varenumer => OBJ
 
-The Language::Expr::Interpreter::VarEnumer instance.
+Store the Language::Expr::Interpreter::VarEnumer instance.
 
 =head1 METHODS
 
@@ -304,9 +304,9 @@ This language will mostly be used inside templates and schemas.
 
 =head2 Why don't you use Language::Farnsworth, or Math::Expression, or Math::Expression::Evaluator, or $FOO?
 
-I need several compilers and interpreters (some even with different
-semantics), so that it's easier to start with a simple parser of my
-own. And of course there is personal preference of language syntax.
+I need several compilers and interpreters (some even with different semantics),
+so it's easier to start with a simple parser of my own. And of course there is
+personal preference of language syntax.
 
 =head2 What is the difference between a compiler and interpreter?
 
@@ -341,7 +341,7 @@ fail.
 
 Syntax reference: L<Language::Expr::Manual::Syntax>
 
-Modules that are using Language::Expr: L<Data::Sah>,
+Modules that are using Language::Expr: L<Data::Sah> (not yet released),
 L<Data::Template::Expr> (not yet released).
 
 Other related modules: L<Math::Expression>,

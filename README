@@ -2,7 +2,7 @@ NAME
     Language::Expr - Simple minilanguage for use in expression
 
 VERSION
-    version 0.15
+    version 0.16
 
 SYNOPSIS
         use 5.010;
@@ -45,7 +45,7 @@ SYNOPSIS
         our $a = 3;
         our $b = 4;
         package main;
-        say $le->compiler->perl('pyth($a, $b)'); # "pyth($a, $b)"
+        say $le->perl('pyth($a, $b)'); # "pyth($a, $b)"
         say $le->eval('pyth($a, $b)'); # 5
 
         # tell compiler to use My namespace, translate 'func()' to 'My::func()' and
@@ -57,7 +57,7 @@ SYNOPSIS
         package main;
         $le->compiler->hook_var (sub { '$My::'.$_[0] });
         $le->compiler->hook_func(sub { 'My::'.(shift)."(".join(", ", @_).")" });
-        say $le->compiler->perl('pyth($a, $b)'); # "My::pyth($My::a, $My::b)"
+        say $le->perl('pyth($a, $b)'); # "My::pyth($My::a, $My::b)"
         say $le->eval('pyth($a, $b)'); # "5.000"
 
         # enumerate variables
@@ -89,21 +89,19 @@ ATTRIBUTES
     func(). This slight inconvenience might be rectified in the future.
 
   interpreter => OBJ
-    The Language::Expr::Interpreter::Default instance.
+    Store the Language::Expr::Interpreter::Default instance.
 
   compiler => OBJ
-    The Language::Expr::Compiler::Perl instance.
+    Store the Language::Expr::Compiler::Perl instance.
 
   js_compiler => OBJ
-    The Language::Expr::Compiler::JS instance. Will only be loaded on
-    demand.
+    Store the Language::Expr::Compiler::JS instance.
 
   php_compiler => OBJ
-    The Language::Expr::Compiler::PHP instance. Will only be loaded on
-    demand.
+    Store the Language::Expr::Compiler::PHP instance.
 
   varenumer => OBJ
-    The Language::Expr::Interpreter::VarEnumer instance.
+    Store the Language::Expr::Interpreter::VarEnumer instance.
 
 METHODS
   new()
@@ -171,8 +169,8 @@ FAQ
 
   Why don't you use Language::Farnsworth, or Math::Expression, or Math::Expression::Evaluator, or $FOO?
     I need several compilers and interpreters (some even with different
-    semantics), so that it's easier to start with a simple parser of my own.
-    And of course there is personal preference of language syntax.
+    semantics), so it's easier to start with a simple parser of my own. And
+    of course there is personal preference of language syntax.
 
   What is the difference between a compiler and interpreter?
     An interpreter evaluates expression as it is being parsed, while a
@@ -203,8 +201,8 @@ BUGS
 SEE ALSO
     Syntax reference: Language::Expr::Manual::Syntax
 
-    Modules that are using Language::Expr: Data::Sah, Data::Template::Expr
-    (not yet released).
+    Modules that are using Language::Expr: Data::Sah (not yet released),
+    Data::Template::Expr (not yet released).
 
     Other related modules: Math::Expression, Math::Expression::Evaluator,
     Language::Farnsworth

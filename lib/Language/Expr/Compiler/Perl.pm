@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::Perl;
 BEGIN {
-  $Language::Expr::Compiler::Perl::VERSION = '0.15';
+  $Language::Expr::Compiler::Perl::VERSION = '0.16';
 }
 # ABSTRACT: Compile Language::Expr expression to Perl
 
@@ -404,7 +404,7 @@ Language::Expr::Compiler::Perl - Compile Language::Expr expression to Perl
 
 =head1 VERSION
 
-version 0.15
+version 0.16
 
 =head1 SYNOPSIS
 
