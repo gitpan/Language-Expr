@@ -12,7 +12,7 @@ Language::Expr::Manual::Syntax - Description of the Language::Expr language
 
 =head1 VERSION
 
-version 0.16
+version 0.17
 
 =head1 OVERVIEW
 
@@ -43,7 +43,7 @@ Ruby).
  false
 
 Differences from Perl: Perl doesn't support native booleans, but there are
-modules like L<boolean> which practically makes Perl behaves like it does.
+modules like L<boolean> which practically make Perl behaves like it does.
 
 =head2 Number
 
@@ -131,11 +131,7 @@ operators mostly to separate statements, which we do not have anyway.
 
 =item * "xor" becomes "^^" (to be consistent with "^" as bitwise-xor).
 
-=item * Currently no tertiary "?:" operator.
-
-Use B<if()> function instead (availability depends on interpreter/compiler).
-
-=item * Hash value is accessed using [] instead of {}.
+=item * Hash value is accessed using [] instead of {}, and barewords (e.g. $hash[key] instead of $hash["key"]) are not allowed.
 
 Which, BTW, is also the way it is done in Python, Ruby, and PHP.
 
@@ -153,6 +149,7 @@ along with their associativity.
 
  left     =>
  left     || // ^^
+ right    ?:
  left     &&
  left     | ^
  left     &
@@ -173,6 +170,10 @@ along with their associativity.
 =head2 Logical or, defined-or, logical xor
 
  left     || // ^^
+
+=head2 Ternary operator
+
+ right    ?:
 
 =head2 Logical and
 
@@ -233,9 +234,10 @@ and:
 
  ${anything goes except closing curly brace}
 
-Differences from Perl: There are no special variables with funny names in Expr
-($., $$, etc), but if they are enclosed with curly braces they are allowed (e.g.
-${.}, ${name/contains/slashes}). In fact, the curly braces syntax allows the
+Differences from Perl: In Expr there is just $scalar, no @array or %hash or
+others. There are no special variables with funny names ($., $$, etc), but if
+they are enclosed with curly braces they are allowed (e.g. ${.},
+${name/contains/slashes}). In fact, the curly braces syntax allows the
 compiler/interpreter a greater freedom of defining the namespace scheme aside
 from the Perl-like double-colon syntax, e.g.:
 

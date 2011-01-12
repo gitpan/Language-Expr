@@ -1,6 +1,6 @@
 package Language::Expr::Interpreter::Dummy;
 BEGIN {
-  $Language::Expr::Interpreter::Dummy::VERSION = '0.16';
+  $Language::Expr::Interpreter::Dummy::VERSION = '0.17';
 }
 # ABSTRACT: Dummy interpreter for Language::Expr (used for testing)
 
@@ -12,6 +12,7 @@ extends 'Language::Expr::Evaluator';
 sub rule_pair_simple { }
 sub rule_pair_string { }
 sub rule_or_xor { }
+sub rule_ternary { }
 sub rule_and { }
 sub rule_bit_or_xor { }
 sub rule_bit_and { }
@@ -53,7 +54,7 @@ Language::Expr::Interpreter::Dummy - Dummy interpreter for Language::Expr (used 
 
 =head1 VERSION
 
-version 0.16
+version 0.17
 
 =head1 DESCRIPTION
 

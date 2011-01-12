@@ -1,6 +1,6 @@
 package Language::Expr::Interpreter::Default;
 BEGIN {
-  $Language::Expr::Interpreter::Default::VERSION = '0.16';
+  $Language::Expr::Interpreter::Default::VERSION = '0.17';
 }
 # ABSTRACT: A default interpreter for Language::Expr
 
@@ -45,6 +45,13 @@ sub rule_or_xor {
         elsif ($op eq '^^') { $res = ($res xor $term) }
     }
     $res;
+}
+
+sub rule_ternary {
+    my ($self, %args) = @_;
+    my $match = $args{match};
+    my $opd = $match->{operand};
+    $opd->[0] ? $opd->[1] : $opd->[2];
 }
 
 sub rule_and {
@@ -351,7 +358,7 @@ Language::Expr::Interpreter::Default - A default interpreter for Language::Expr
 
 =head1 VERSION
 
-version 0.16
+version 0.17
 
 =head1 SYNOPSIS
 

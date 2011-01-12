@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::JS;
 BEGIN {
-  $Language::Expr::Compiler::JS::VERSION = '0.16';
+  $Language::Expr::Compiler::JS::VERSION = '0.17';
 }
 # ABSTRACT: Compile Language::Expr expression to JavaScript
 
@@ -53,6 +53,13 @@ sub rule_and {
         if    ($op eq '&&') { push @res, " && $term" }
     }
     join "", grep {defined} @res;
+}
+
+sub rule_ternary {
+    my ($self, %args) = @_;
+    my $match = $args{match};
+    my $opd = $match->{operand};
+    "($opd->[0] ? $opd->[1] : $opd->[2])";
 }
 
 sub rule_bit_or_xor {
@@ -426,7 +433,7 @@ Language::Expr::Compiler::JS - Compile Language::Expr expression to JavaScript
 
 =head1 VERSION
 
-version 0.16
+version 0.17
 
 =head1 SYNOPSIS
 

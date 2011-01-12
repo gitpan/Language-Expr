@@ -1,41 +1,68 @@
 package Language::Expr;
 BEGIN {
-  $Language::Expr::VERSION = '0.16';
+  $Language::Expr::VERSION = '0.17';
 }
 # ABSTRACT: Simple minilanguage for use in expression
 
 
 use Any::Moose;
-use Language::Expr::Interpreter::Default;
-use Language::Expr::Compiler::Perl;
-use Language::Expr::Interpreter::VarEnumer;
 
 
 
-has interpreted => (is => 'rw', default => 0);
+has interpreted => (
+    is => 'rw',
+    default => 0,
+);
 
 
 has interpreter => (
     is => 'ro',
-    default => sub { Language::Expr::Interpreter::Default->new });
+    lazy => 1,
+    default => sub {
+        require Language::Expr::Interpreter::Default;
+        Language::Expr::Interpreter::Default->new;
+    },
+);
 
 
 has compiler => (
     is => 'ro',
-    default => sub { Language::Expr::Compiler::Perl->new });
+    lazy => 1,
+    default => sub {
+        require Language::Expr::Compiler::Perl;
+        Language::Expr::Compiler::Perl->new;
+    },
+);
 
 
 has js_compiler => (
-    is => 'rw');
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        require Language::Expr::Compiler::JS;
+        Language::Expr::Compiler::JS->new;
+    },
+);
 
 
 has php_compiler => (
-    is => 'rw');
+    is => 'ro',
+    lazy => 1,
+    default => sub {
+        require Language::Expr::Compiler::PHP;
+        Language::Expr::Compiler::PHP->new;
+    },
+);
 
 
 has varenumer => (
     is => 'ro',
-    default => sub { Language::Expr::Interpreter::VarEnumer->new });
+    lazy => 1,
+    default => sub {
+        require Language::Expr::Interpreter::VarEnumer;
+        Language::Expr::Interpreter::VarEnumer->new;
+    },
+);
 
 
 
@@ -119,7 +146,7 @@ Language::Expr - Simple minilanguage for use in expression
 
 =head1 VERSION
 
-version 0.16
+version 0.17
 
 =head1 SYNOPSIS
 
@@ -188,9 +215,6 @@ Language::Expr defines a simple, Perl-like expression minilanguage. It
 supports mathematical and string operators, arrays, hashes, variables,
 and functions. See L<Language::Expr::Manual::Syntax> for description
 of the language syntax.
-
-The language is very simple. The parser is just around 120 lines
-long.
 
 This distribution consists of the language parser
 (L<Language::Expr::Parser>), some interpreters

@@ -1,6 +1,6 @@
 package Language::Expr::Interpreter::VarEnumer;
 BEGIN {
-  $Language::Expr::Interpreter::VarEnumer::VERSION = '0.16';
+  $Language::Expr::Interpreter::VarEnumer::VERSION = '0.17';
 }
 # ABSTRACT: Enumerate variables mentioned in Language::Expr expression
 
@@ -23,6 +23,8 @@ sub rule_pair_simple { }
 sub rule_pair_string { }
 
 sub rule_or_xor { }
+
+sub rule_ternary { }
 
 sub rule_and { }
 
@@ -121,7 +123,7 @@ Language::Expr::Interpreter::VarEnumer - Enumerate variables mentioned in Langua
 
 =head1 VERSION
 
-version 0.16
+version 0.17
 
 =head1 ATTRIBUTES
 

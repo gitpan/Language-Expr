@@ -1,6 +1,6 @@
 package Language::Expr::Compiler::PHP;
 BEGIN {
-  $Language::Expr::Compiler::PHP::VERSION = '0.16';
+  $Language::Expr::Compiler::PHP::VERSION = '0.17';
 }
 # ABSTRACT: Compile Language::Expr expression to PHP
 
@@ -60,6 +60,13 @@ sub rule_and {
                                       'return $_a && $_b ? $_b : ($_a ? $_b : $_a); })') }
     }
     join "", grep {defined} @res;
+}
+
+sub rule_ternary {
+    my ($self, %args) = @_;
+    my $match = $args{match};
+    my $opd = $match->{operand};
+    "($opd->[0] ? $opd->[1] : $opd->[2])";
 }
 
 sub rule_bit_or_xor {
@@ -480,7 +487,7 @@ Language::Expr::Compiler::PHP - Compile Language::Expr expression to PHP
 
 =head1 VERSION
 
-version 0.16
+version 0.17
 
 =head1 SYNOPSIS
 

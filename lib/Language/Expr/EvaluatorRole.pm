@@ -1,6 +1,6 @@
 package Language::Expr::EvaluatorRole;
 BEGIN {
-  $Language::Expr::EvaluatorRole::VERSION = '0.16';
+  $Language::Expr::EvaluatorRole::VERSION = '0.17';
 }
 # ABSTRACT: Specification for Language::Expr interpreter/compiler
 
@@ -10,6 +10,7 @@ use Any::Moose '::Role';
 requires 'rule_pair_simple';
 requires 'rule_pair_string';
 requires 'rule_or_xor';
+requires 'rule_ternary';
 requires 'rule_and';
 requires 'rule_bit_or_xor';
 requires 'rule_bit_and';
@@ -84,7 +85,7 @@ sub parse_dquotestr {
             push @sbuf, $_;
         }
     }
-    push @res, {type=>"STR", value=>join("", @sbuf)} if @sbuf;
+    push @res, {type=>"STR", value=>join("", grep {defined} @sbuf)} if @sbuf;
     \@res;
 }
 
@@ -103,7 +104,7 @@ sub parse_squotestr {
         elsif ($_ eq "\\\\") { push @sbuf, "\\" }
         else                 { push @sbuf, $_   }
     }
-    push @res, {type=>"STR", value=>join("", @sbuf)} if @sbuf;
+    push @res, {type=>"STR", value=>join("", grep {defined} @sbuf)} if @sbuf;
     \@res;
 }
 
@@ -119,7 +120,7 @@ Language::Expr::EvaluatorRole - Specification for Language::Expr interpreter/com
 
 =head1 VERSION
 
-version 0.16
+version 0.17
 
 =head1 METHODS
 
