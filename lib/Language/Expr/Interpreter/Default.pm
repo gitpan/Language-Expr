@@ -1,10 +1,14 @@
 package Language::Expr::Interpreter::Default;
 BEGIN {
-  $Language::Expr::Interpreter::Default::VERSION = '0.17';
+  $Language::Expr::Interpreter::Default::VERSION = '0.18';
 }
 # ABSTRACT: A default interpreter for Language::Expr
 
-use Any::Moose;
+use 5.010;
+use strict;
+use warnings;
+
+use Moo;
 with 'Language::Expr::EvaluatorRole';
 extends 'Language::Expr::Evaluator';
 use List::Util 'reduce';
@@ -17,7 +21,7 @@ has vars  => (is => 'rw', default => sub { {} });
 has funcs => (is => 'rw', default => sub { {} });
 
 
-has level => (is => 'rw', default => 0);
+has level => (is => 'rw', default => sub{0});
 
 
 
@@ -345,8 +349,6 @@ sub expr_postprocess {
 }
 
 
-__PACKAGE__->meta->make_immutable;
-no Any::Moose;
 1;
 
 __END__
@@ -358,7 +360,7 @@ Language::Expr::Interpreter::Default - A default interpreter for Language::Expr
 
 =head1 VERSION
 
-version 0.17
+version 0.18
 
 =head1 SYNOPSIS
 

@@ -1,17 +1,21 @@
 package Language::Expr;
 BEGIN {
-  $Language::Expr::VERSION = '0.17';
+  $Language::Expr::VERSION = '0.18';
 }
 # ABSTRACT: Simple minilanguage for use in expression
 
 
-use Any::Moose;
+use 5.010;
+use strict;
+use warnings;
+
+use Moo;
 
 
 
 has interpreted => (
     is => 'rw',
-    default => 0,
+    default => sub{0},
 );
 
 
@@ -146,7 +150,7 @@ Language::Expr - Simple minilanguage for use in expression
 
 =head1 VERSION
 
-version 0.17
+version 0.18
 
 =head1 SYNOPSIS
 

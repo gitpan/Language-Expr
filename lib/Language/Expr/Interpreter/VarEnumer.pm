@@ -1,10 +1,14 @@
 package Language::Expr::Interpreter::VarEnumer;
 BEGIN {
-  $Language::Expr::Interpreter::VarEnumer::VERSION = '0.17';
+  $Language::Expr::Interpreter::VarEnumer::VERSION = '0.18';
 }
 # ABSTRACT: Enumerate variables mentioned in Language::Expr expression
 
-use Any::Moose;
+use 5.010;
+use strict;
+use warnings;
+
+use Moo;
 with 'Language::Expr::EvaluatorRole';
 extends 'Language::Expr::Evaluator';
 
@@ -110,8 +114,6 @@ sub eval {
 }
 
 
-__PACKAGE__->meta->make_immutable;
-no Any::Moose;
 1;
 
 __END__
@@ -123,7 +125,7 @@ Language::Expr::Interpreter::VarEnumer - Enumerate variables mentioned in Langua
 
 =head1 VERSION
 
-version 0.17
+version 0.18
 
 =head1 ATTRIBUTES
 

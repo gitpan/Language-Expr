@@ -1,11 +1,14 @@
 package Language::Expr::Compiler::PHP;
 BEGIN {
-  $Language::Expr::Compiler::PHP::VERSION = '0.17';
+  $Language::Expr::Compiler::PHP::VERSION = '0.18';
 }
 # ABSTRACT: Compile Language::Expr expression to PHP
 
 use 5.010;
-use Any::Moose;
+use strict;
+use warnings;
+
+use Moo;
 with 'Language::Expr::EvaluatorRole';
 extends 'Language::Expr::Compiler::Base';
 
@@ -474,8 +477,6 @@ sub _substitute_use {
     $str;
 }
 
-__PACKAGE__->meta->make_immutable;
-no Any::Moose;
 1;
 
 __END__
@@ -487,7 +488,7 @@ Language::Expr::Compiler::PHP - Compile Language::Expr expression to PHP
 
 =head1 VERSION
 
-version 0.17
+version 0.18
 
 =head1 SYNOPSIS
 

@@ -1,11 +1,14 @@
 package Language::Expr::Compiler::JS;
 BEGIN {
-  $Language::Expr::Compiler::JS::VERSION = '0.17';
+  $Language::Expr::Compiler::JS::VERSION = '0.18';
 }
 # ABSTRACT: Compile Language::Expr expression to JavaScript
 
 use 5.010;
-use Any::Moose;
+use strict;
+use warnings;
+
+use Moo;
 with 'Language::Expr::EvaluatorRole';
 extends 'Language::Expr::Compiler::Base';
 
@@ -420,8 +423,6 @@ sub js {
     $res;
 }
 
-__PACKAGE__->meta->make_immutable;
-no Any::Moose;
 1;
 
 __END__
@@ -433,7 +434,7 @@ Language::Expr::Compiler::JS - Compile Language::Expr expression to JavaScript
 
 =head1 VERSION
 
-version 0.17
+version 0.18
 
 =head1 SYNOPSIS
 

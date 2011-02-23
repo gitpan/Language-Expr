@@ -1,10 +1,14 @@
 package Language::Expr::Compiler::Perl;
 BEGIN {
-  $Language::Expr::Compiler::Perl::VERSION = '0.17';
+  $Language::Expr::Compiler::Perl::VERSION = '0.18';
 }
 # ABSTRACT: Compile Language::Expr expression to Perl
 
-use Any::Moose;
+use 5.010;
+use strict;
+use warnings;
+
+use Moo;
 with 'Language::Expr::EvaluatorRole';
 extends 'Language::Expr::Compiler::Base';
 
@@ -398,8 +402,6 @@ sub eval {
     $res;
 }
 
-__PACKAGE__->meta->make_immutable;
-no Any::Moose;
 1;
 
 __END__
@@ -411,7 +413,7 @@ Language::Expr::Compiler::Perl - Compile Language::Expr expression to Perl
 
 =head1 VERSION
 
-version 0.17
+version 0.18
 
 =head1 SYNOPSIS
 

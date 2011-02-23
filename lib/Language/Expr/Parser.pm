@@ -1,6 +1,6 @@
 package Language::Expr::Parser;
 BEGIN {
-  $Language::Expr::Parser::VERSION = '0.17';
+  $Language::Expr::Parser::VERSION = '0.18';
 }
 # ABSTRACT: Parse Language::Expr expression
 
@@ -303,7 +303,7 @@ Language::Expr::Parser - Parse Language::Expr expression
 
 =head1 VERSION
 
-version 0.17
+version 0.18
 
 =head1 METHODS
 

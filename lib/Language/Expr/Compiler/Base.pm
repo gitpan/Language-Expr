@@ -1,11 +1,14 @@
 package Language::Expr::Compiler::Base;
 BEGIN {
-  $Language::Expr::Compiler::Base::VERSION = '0.17';
+  $Language::Expr::Compiler::Base::VERSION = '0.18';
 }
 # ABSTRACT: Base class for Expr compilers
 
 use 5.010;
-use Any::Moose;
+use strict;
+use warnings;
+
+use Moo;
 extends 'Language::Expr::Evaluator';
 
 use UUID::Tiny ':std';
@@ -49,8 +52,6 @@ sub marker_ids_re {
     qr/$re/;
 }
 
-__PACKAGE__->meta->make_immutable;
-no Any::Moose;
 1;
 
 __END__
@@ -62,7 +63,7 @@ Language::Expr::Compiler::Base - Base class for Expr compilers
 
 =head1 VERSION
 
-version 0.17
+version 0.18
 
 =head1 ATTRIBUTES
 

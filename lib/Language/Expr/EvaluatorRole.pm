@@ -1,11 +1,14 @@
 package Language::Expr::EvaluatorRole;
 BEGIN {
-  $Language::Expr::EvaluatorRole::VERSION = '0.17';
+  $Language::Expr::EvaluatorRole::VERSION = '0.18';
 }
 # ABSTRACT: Specification for Language::Expr interpreter/compiler
 
 use 5.010;
-use Any::Moose '::Role';
+use strict;
+use warnings;
+
+use Moo::Role;
 
 requires 'rule_pair_simple';
 requires 'rule_pair_string';
@@ -108,7 +111,6 @@ sub parse_squotestr {
     \@res;
 }
 
-no Any::Moose;
 1;
 
 __END__
@@ -120,7 +122,7 @@ Language::Expr::EvaluatorRole - Specification for Language::Expr interpreter/com
 
 =head1 VERSION
 
-version 0.17
+version 0.18
 
 =head1 METHODS
 
