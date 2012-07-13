@@ -1,8 +1,7 @@
 package Language::Expr::Compiler::Base;
-BEGIN {
-  $Language::Expr::Compiler::Base::VERSION = '0.18';
-}
 # ABSTRACT: Base class for Expr compilers
+
+our $VERSION = '0.19'; # VERSION
 
 use 5.010;
 use strict;
@@ -63,7 +62,7 @@ Language::Expr::Compiler::Base - Base class for Expr compilers
 
 =head1 VERSION
 
-version 0.18
+version 0.19
 
 =head1 ATTRIBUTES
 
@@ -87,8 +86,8 @@ Can be set to a coderef that will be called during parsing whenever variable is
 encountered. The coderef is called with variable name as argument, and expected
 to return target language code to handle the variable. By default, if this
 attribute is not set, variable in expression is returned as is (e.g. '$foo'
-becomes '$foo' in Perl), which means some will result in error (e.g. '${name that
-contains some symbols that makes it invalid Perl)').
+becomes '$foo' in Perl), which means some will result in error (e.g. '${name
+that contains some symbols that makes it invalid Perl}').
 
 If the coderef returns undef, the default behaviour is used.
 
@@ -129,7 +128,7 @@ Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Steven Haryanto.
+This software is copyright (c) 2012 by Steven Haryanto.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

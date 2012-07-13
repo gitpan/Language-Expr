@@ -1,8 +1,7 @@
 package Language::Expr::Evaluator;
-BEGIN {
-  $Language::Expr::Evaluator::VERSION = '0.18';
-}
 # ABSTRACT: Base class for Language::Expr compilers and interpreters
+
+our $VERSION = '0.19'; # VERSION
 
 use 5.010;
 use strict;
@@ -29,7 +28,7 @@ Language::Expr::Evaluator - Base class for Language::Expr compilers and interpre
 
 =head1 VERSION
 
-version 0.18
+version 0.19
 
 =head1 METHODS
 
@@ -43,7 +42,7 @@ Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2011 by Steven Haryanto.
+This software is copyright (c) 2012 by Steven Haryanto.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

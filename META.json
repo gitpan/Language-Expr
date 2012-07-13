@@ -1,0 +1,56 @@
+{
+   "abstract" : "Simple minilanguage for use in expression",
+   "author" : [
+      "Steven Haryanto <stevenharyanto@gmail.com>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Dist::Zilla version 4.300006, CPAN::Meta::Converter version 2.113640",
+   "license" : [
+      "perl_5"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "Language-Expr",
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "Module::Build" : "0.3601"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "Module::Build" : "0.3601"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "JSON" : 0,
+            "List::MoreUtils" : 0,
+            "Moo" : 0,
+            "Regexp::Grammars" : "1.005",
+            "UUID::Tiny" : 0,
+            "boolean" : "0.20",
+            "perl" : "5.010000"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "Data::Clone" : 0,
+            "Data::Rmap" : 0,
+            "File::Which" : 0,
+            "String::ShellQuote" : 0
+         }
+      }
+   },
+   "release_status" : "stable",
+   "resources" : {
+      "homepage" : "http://search.cpan.org/dist/Language-Expr/",
+      "repository" : {
+         "url" : "http://github.com/sharyanto/perl-Language-Expr"
+      }
+   },
+   "version" : "0.19"
+}
+
