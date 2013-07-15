@@ -9,9 +9,8 @@ my %module_build_args = (
   "build_requires" => {
     "Data::Clone" => 0,
     "Data::Rmap" => 0,
-    "File::Which" => 0,
     "Module::Build" => "0.3601",
-    "String::ShellQuote" => 0
+    "Test::Exception" => 0
   },
   "configure_requires" => {
     "Module::Build" => "0.3601"
@@ -21,19 +20,19 @@ my %module_build_args = (
     "Steven Haryanto <stevenharyanto\@gmail.com>"
   ],
   "dist_name" => "Language-Expr",
-  "dist_version" => "0.19",
+  "dist_version" => "0.20",
   "license" => "perl",
   "module_name" => "Language::Expr",
   "recommends" => {},
   "recursive_test_files" => 1,
   "requires" => {
-    "JSON" => 0,
     "List::MoreUtils" => 0,
     "Moo" => 0,
+    "Moo::Role" => 0,
     "Regexp::Grammars" => "1.005",
     "UUID::Tiny" => 0,
     "boolean" => "0.20",
-    "perl" => "5.010000"
+    "perl" => "5.010001"
   },
   "script_files" => []
 );

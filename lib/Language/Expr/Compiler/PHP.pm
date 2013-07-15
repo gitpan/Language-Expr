@@ -1,7 +1,7 @@
 package Language::Expr::Compiler::PHP;
 # ABSTRACT: Compile Language::Expr expression to PHP
 
-our $VERSION = '0.19'; # VERSION
+our $VERSION = '0.20'; # VERSION
 
 use 5.010;
 use strict;
@@ -123,15 +123,13 @@ sub rule_comparison3 {
 
 sub _comparison1 {
     my ($opd1, $op, $opd2) = @_;
-    given ($op) {
-        when ('eq') { return "(strcmp($opd1, $opd2) == 0)" }
-        when ('ne') { return "(strcmp($opd1, $opd2) != 0)" }
-        when ('lt') { return "(strcmp($opd1, $opd2) <= 0)" }
-        when ('le') { return "(strcmp($opd1, $opd2) <  0)" }
-        when ('gt') { return "(strcmp($opd1, $opd2) >= 0)" }
-        when ('ge') { return "(strcmp($opd1, $opd2) >  0)" }
-        default { return "($opd1 $op $opd2)" }
-    }
+    if    ($op eq 'eq') { return "(strcmp($opd1, $opd2) == 0)" }
+    elsif ($op eq 'ne') { return "(strcmp($opd1, $opd2) != 0)" }
+    elsif ($op eq 'lt') { return "(strcmp($opd1, $opd2) <= 0)" }
+    elsif ($op eq 'le') { return "(strcmp($opd1, $opd2) <  0)" }
+    elsif ($op eq 'gt') { return "(strcmp($opd1, $opd2) >= 0)" }
+    elsif ($op eq 'ge') { return "(strcmp($opd1, $opd2) >  0)" }
+    else { return "($opd1 $op $opd2)" }
 }
 
 sub rule_comparison {
@@ -487,7 +485,7 @@ Language::Expr::Compiler::PHP - Compile Language::Expr expression to PHP
 
 =head1 VERSION
 
-version 0.19
+version 0.20
 
 =head1 SYNOPSIS
 
@@ -553,7 +551,7 @@ Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 by Steven Haryanto.
+This software is copyright (c) 2013 by Steven Haryanto.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

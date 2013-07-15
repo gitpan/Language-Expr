@@ -29,5 +29,6 @@ t/hook_func.t
 t/hook_var.t
 t/release-pod-coverage.t
 t/release-pod-syntax.t
+t/release-rinci.t
 t/stdtests.pl
 t/testlib.pl

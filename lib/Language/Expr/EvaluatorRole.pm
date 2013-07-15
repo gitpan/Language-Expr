@@ -1,7 +1,7 @@
 package Language::Expr::EvaluatorRole;
 # ABSTRACT: Specification for Language::Expr interpreter/compiler
 
-our $VERSION = '0.19'; # VERSION
+our $VERSION = '0.20'; # VERSION
 
 use 5.010;
 use strict;
@@ -121,7 +121,7 @@ Language::Expr::EvaluatorRole - Specification for Language::Expr interpreter/com
 
 =head1 VERSION
 
-version 0.19
+version 0.20
 
 =head1 METHODS
 
@@ -154,7 +154,7 @@ Steven Haryanto <stevenharyanto@gmail.com>
 
 =head1 COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2012 by Steven Haryanto.
+This software is copyright (c) 2013 by Steven Haryanto.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
