@@ -1,7 +1,7 @@
 package Language::Expr::Interpreter::Dummy;
 # ABSTRACT: Dummy interpreter for Language::Expr (used for testing)
 
-our $VERSION = '0.20'; # VERSION
+our $VERSION = '0.21'; # VERSION
 
 use 5.010;
 use strict;
@@ -47,6 +47,7 @@ sub expr_postprocess { }
 1;
 
 __END__
+
 =pod
 
 =head1 NAME
@@ -55,7 +56,7 @@ Language::Expr::Interpreter::Dummy - Dummy interpreter for Language::Expr (used 
 
 =head1 VERSION
 
-version 0.20
+version 0.21
 
 =head1 DESCRIPTION
 
@@ -79,4 +80,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

@@ -1,7 +1,7 @@
 package Language::Expr::Compiler::PHP;
 # ABSTRACT: Compile Language::Expr expression to PHP
 
-our $VERSION = '0.20'; # VERSION
+our $VERSION = '0.21'; # VERSION
 
 use 5.010;
 use strict;
@@ -477,6 +477,7 @@ sub _substitute_use {
 1;
 
 __END__
+
 =pod
 
 =head1 NAME
@@ -485,7 +486,7 @@ Language::Expr::Compiler::PHP - Compile Language::Expr expression to PHP
 
 =head1 VERSION
 
-version 0.20
+version 0.21
 
 =head1 SYNOPSIS
 
@@ -557,4 +558,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

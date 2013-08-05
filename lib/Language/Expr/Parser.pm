@@ -1,7 +1,7 @@
 package Language::Expr::Parser;
 # ABSTRACT: Parse Language::Expr expression
 
-our $VERSION = '0.20'; # VERSION
+our $VERSION = '0.21'; # VERSION
 
 use 5.010;
 # now can't compile with this on?
@@ -294,6 +294,7 @@ sub parse_expr {
 1;
 
 __END__
+
 =pod
 
 =head1 NAME
@@ -302,7 +303,7 @@ Language::Expr::Parser - Parse Language::Expr expression
 
 =head1 VERSION
 
-version 0.20
+version 0.21
 
 =head1 METHODS
 
@@ -330,4 +331,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

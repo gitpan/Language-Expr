@@ -1,7 +1,7 @@
 package Language::Expr;
 # ABSTRACT: Simple minilanguage for use in expression
 
-our $VERSION = '0.20'; # VERSION
+our $VERSION = '0.21'; # VERSION
 
 
 use 5.010001;
@@ -141,6 +141,7 @@ sub enum_vars {
 1;
 
 __END__
+
 =pod
 
 =head1 NAME
@@ -149,7 +150,7 @@ Language::Expr - Simple minilanguage for use in expression
 
 =head1 VERSION
 
-version 0.20
+version 0.21
 
 =head1 SYNOPSIS
 
@@ -386,4 +387,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-

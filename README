@@ -2,7 +2,7 @@ NAME
     Language::Expr - Simple minilanguage for use in expression
 
 VERSION
-    version 0.20
+    version 0.21
 
 SYNOPSIS
         use 5.010;

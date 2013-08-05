@@ -1,13 +1,14 @@
 package Language::Expr::Interpreter::VarEnumer;
 # ABSTRACT: Enumerate variables mentioned in Language::Expr expression
 
-our $VERSION = '0.20'; # VERSION
+our $VERSION = '0.21'; # VERSION
 
 use 5.010;
 use strict;
 use warnings;
 
 use Moo;
+use experimental 'smartmatch';
 with 'Language::Expr::EvaluatorRole';
 extends 'Language::Expr::Evaluator';
 
@@ -116,6 +117,7 @@ sub eval {
 1;
 
 __END__
+
 =pod
 
 =head1 NAME
@@ -124,7 +126,7 @@ Language::Expr::Interpreter::VarEnumer - Enumerate variables mentioned in Langua
 
 =head1 VERSION
 
-version 0.20
+version 0.21
 
 =head1 ATTRIBUTES
 
@@ -156,4 +158,3 @@ This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
 
 =cut
-
