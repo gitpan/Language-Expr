@@ -2,7 +2,8 @@ NAME
     Language::Expr - Simple minilanguage for use in expression
 
 VERSION
-    version 0.21
+    This document describes version 0.22 of module Language::Expr (in
+    distribution Language-Expr), released on 2014-04-28.
 
 SYNOPSIS
         use 5.010;
@@ -75,7 +76,7 @@ DESCRIPTION
     (Language::Expr::Interpreter::*), and some compilers
     (Language::Expr::Compiler::*).
 
-ATTRIBUTES
+ATTRIBUTES (MANUAL)
   interpreted => BOOL
     Whether to use the interpreter. By default is 0 (use the compiler, which
     means Language::Expr expression will be compiled to Perl code first
@@ -192,7 +193,7 @@ FAQ
   How to show details of errors in expression?
     This is a TODO item.
 
-BUGS
+KNOWN BUGS
     Due to possible bugs in Perl's RE engine or Regexp::Grammars or my
     grammar, some syntax errors will cause further parsing to fail.
 
@@ -205,11 +206,26 @@ SEE ALSO
     Other related modules: Math::Expression, Math::Expression::Evaluator,
     Language::Farnsworth
 
+HOMEPAGE
+    Please visit the project's homepage at
+    <https://metacpan.org/release/Language-Expr>.
+
+SOURCE
+    Source repository is at
+    <https://github.com/sharyanto/perl-Language-Expr>.
+
+BUGS
+    Please report any bugs or feature requests on the bugtracker website
+    <https://rt.cpan.org/Public/Dist/Display.html?Name=Language-Expr>
+
+    When submitting a bug or request, please include a test-file or a patch
+    to an existing test-file that illustrates the bug or desired feature.
+
 AUTHOR
     Steven Haryanto <stevenharyanto@gmail.com>
 
 COPYRIGHT AND LICENSE
-    This software is copyright (c) 2013 by Steven Haryanto.
+    This software is copyright (c) 2014 by Steven Haryanto.
 
     This is free software; you can redistribute it and/or modify it under
     the same terms as the Perl 5 programming language system itself.

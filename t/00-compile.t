@@ -1,43 +1,56 @@
+use 5.006;
 use strict;
 use warnings;
 
-# This test was generated via Dist::Zilla::Plugin::Test::Compile 2.018
+# this test was generated with Dist::Zilla::Plugin::Test::Compile 2.040
 
-use Test::More 0.88;
+use Test::More  tests => 11 + ($ENV{AUTHOR_TESTING} ? 1 : 0);
 
 
 
-use Capture::Tiny qw{ capture };
-
-my @module_files = qw(
-Language/Expr.pm
-Language/Expr/Compiler/Base.pm
-Language/Expr/Compiler/JS.pm
-Language/Expr/Compiler/PHP.pm
-Language/Expr/Compiler/Perl.pm
-Language/Expr/Evaluator.pm
-Language/Expr/EvaluatorRole.pm
-Language/Expr/Interpreter/Default.pm
-Language/Expr/Interpreter/Dummy.pm
-Language/Expr/Interpreter/VarEnumer.pm
-Language/Expr/Parser.pm
+my @module_files = (
+    'Language/Expr.pm',
+    'Language/Expr/Compiler/Base.pm',
+    'Language/Expr/Compiler/JS.pm',
+    'Language/Expr/Compiler/PHP.pm',
+    'Language/Expr/Compiler/Perl.pm',
+    'Language/Expr/Evaluator.pm',
+    'Language/Expr/EvaluatorRole.pm',
+    'Language/Expr/Interpreter/Default.pm',
+    'Language/Expr/Interpreter/Dummy.pm',
+    'Language/Expr/Interpreter/VarEnumer.pm',
+    'Language/Expr/Parser.pm'
 );
 
-my @scripts = qw(
 
-);
 
 # no fake home requested
+
+my $inc_switch = -d 'blib' ? '-Mblib' : '-Ilib';
+
+use File::Spec;
+use IPC::Open3;
+use IO::Handle;
+
+open my $stdin, '<', File::Spec->devnull or die "can't open devnull: $!";
 
 my @warnings;
 for my $lib (@module_files)
 {
-    my ($stdout, $stderr, $exit) = capture {
-        system($^X, '-Mblib', '-e', qq{require q[$lib]});
-    };
+    # see L<perlfaq8/How can I capture STDERR from an external command?>
+    my $stderr = IO::Handle->new;
+
+    my $pid = open3($stdin, '>&STDERR', $stderr, $^X, $inc_switch, '-e', "require q[$lib]");
+    binmode $stderr, ':crlf' if $^O eq 'MSWin32';
+    my @_warnings = <$stderr>;
+    waitpid($pid, 0);
     is($?, 0, "$lib loaded ok");
-    warn $stderr if $stderr;
-    push @warnings, $stderr if $stderr;
+
+    if (@_warnings)
+    {
+        warn @_warnings;
+        push @warnings, @_warnings;
+    }
 }
 
 
@@ -45,5 +58,3 @@ for my $lib (@module_files)
 is(scalar(@warnings), 0, 'no warnings found') if $ENV{AUTHOR_TESTING};
 
 
-
-done_testing;
