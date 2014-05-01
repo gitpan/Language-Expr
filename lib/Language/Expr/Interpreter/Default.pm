@@ -1,7 +1,7 @@
 package Language::Expr::Interpreter::Default;
 # ABSTRACT: A default interpreter for Language::Expr
 
-our $VERSION = '0.22'; # VERSION
+our $VERSION = '0.23'; # VERSION
 
 use 5.010;
 use strict;
@@ -362,7 +362,7 @@ Language::Expr::Interpreter::Default - A default interpreter for Language::Expr
 
 =head1 VERSION
 
-This document describes version 0.22 of module Language::Expr::Interpreter::Default (in distribution Language-Expr), released on 2014-04-28.
+This document describes version 0.23 of module Language::Expr::Interpreter::Default (in distribution Language-Expr), released on 2014-05-01.
 
 =head1 SYNOPSIS
 

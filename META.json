@@ -43,9 +43,6 @@
          "requires" : {
             "Data::Clone" : "0",
             "Data::Rmap" : "0",
-            "File::Spec" : "0",
-            "IO::Handle" : "0",
-            "IPC::Open3" : "0",
             "Test::Exception" : "0",
             "Test::More" : "0.98"
          }
@@ -63,7 +60,7 @@
          "web" : "https://github.com/sharyanto/perl-Language-Expr"
       }
    },
-   "version" : "0.22",
+   "version" : "0.23",
    "x_Dist_Zilla" : {
       "perl" : {
          "version" : "5.010001"
@@ -303,22 +300,6 @@
             "class" : "Dist::Zilla::Plugin::SHARYANTO::OurPkgVersion",
             "name" : "@Filter/SHARYANTO::OurPkgVersion",
             "version" : "0.02"
-         },
-         {
-            "class" : "Dist::Zilla::Plugin::Test::Compile",
-            "config" : {
-               "Dist::Zilla::Plugin::Test::Compile" : {
-                  "filename" : "t/00-compile.t",
-                  "module_finder" : [
-                     ":InstallModules"
-                  ],
-                  "script_finder" : [
-                     ":ExecFiles"
-                  ]
-               }
-            },
-            "name" : "@Filter/Test::Compile",
-            "version" : "2.040"
          },
          {
             "class" : "Dist::Zilla::Plugin::Test::Rinci",

@@ -1,7 +1,7 @@
 package Language::Expr::EvaluatorRole;
 # ABSTRACT: Specification for Language::Expr interpreter/compiler
 
-our $VERSION = '0.22'; # VERSION
+our $VERSION = '0.23'; # VERSION
 
 use 5.010;
 use strict;
@@ -124,7 +124,7 @@ Language::Expr::EvaluatorRole - Specification for Language::Expr interpreter/com
 
 =head1 VERSION
 
-This document describes version 0.22 of module Language::Expr::EvaluatorRole (in distribution Language-Expr), released on 2014-04-28.
+This document describes version 0.23 of module Language::Expr::EvaluatorRole (in distribution Language-Expr), released on 2014-05-01.
 
 =head1 METHODS
 

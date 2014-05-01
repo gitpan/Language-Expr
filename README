@@ -2,8 +2,8 @@ NAME
     Language::Expr - Simple minilanguage for use in expression
 
 VERSION
-    This document describes version 0.22 of module Language::Expr (in
-    distribution Language-Expr), released on 2014-04-28.
+    This document describes version 0.23 of module Language::Expr (in
+    distribution Language-Expr), released on 2014-05-01.
 
 SYNOPSIS
         use 5.010;

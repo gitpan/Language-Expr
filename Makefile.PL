@@ -32,13 +32,10 @@ my %WriteMakefileArgs = (
   "TEST_REQUIRES" => {
     "Data::Clone" => 0,
     "Data::Rmap" => 0,
-    "File::Spec" => 0,
-    "IO::Handle" => 0,
-    "IPC::Open3" => 0,
     "Test::Exception" => 0,
     "Test::More" => "0.98"
   },
-  "VERSION" => "0.22",
+  "VERSION" => "0.23",
   "test" => {
     "TESTS" => "t/*.t"
   }
@@ -48,9 +45,6 @@ my %WriteMakefileArgs = (
 my %FallbackPrereqs = (
   "Data::Clone" => 0,
   "Data::Rmap" => 0,
-  "File::Spec" => 0,
-  "IO::Handle" => 0,
-  "IPC::Open3" => 0,
   "List::MoreUtils" => 0,
   "Moo" => 0,
   "Moo::Role" => 0,

@@ -21,7 +21,6 @@ lib/Language/Expr/Manual/Syntax.pod
 lib/Language/Expr/Parser.pm
 t-disabled/eval-js.t
 t-disabled/eval-php.t
-t/00-compile.t
 t/01-basics.t
 t/enum_vars.t
 t/eval.t

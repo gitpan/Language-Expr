@@ -1,7 +1,7 @@
 package Language::Expr::Evaluator;
 # ABSTRACT: Base class for Language::Expr compilers and interpreters
 
-our $VERSION = '0.22'; # VERSION
+our $VERSION = '0.23'; # VERSION
 
 use 5.010;
 use strict;
@@ -31,7 +31,7 @@ Language::Expr::Evaluator - Base class for Language::Expr compilers and interpre
 
 =head1 VERSION
 
-This document describes version 0.22 of module Language::Expr::Evaluator (in distribution Language-Expr), released on 2014-04-28.
+This document describes version 0.23 of module Language::Expr::Evaluator (in distribution Language-Expr), released on 2014-05-01.
 
 =head1 METHODS
 

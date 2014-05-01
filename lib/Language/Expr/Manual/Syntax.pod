@@ -16,7 +16,7 @@ Language::Expr::Manual::Syntax - Description of the Language::Expr language
 
 =head1 VERSION
 
-This document describes version 0.22 of module Language::Expr::Manual::Syntax (in distribution Language-Expr), released on 2014-04-28.
+This document describes version 0.23 of module Language::Expr::Manual::Syntax (in distribution Language-Expr), released on 2014-05-01.
 
 =head1 OVERVIEW
 

@@ -1,8 +1,8 @@
 package Language::Expr;
 # ABSTRACT: Simple minilanguage for use in expression
 
-our $VERSION = '0.22'; # VERSION
-our $DATE = '2014-04-28'; # DATE
+our $VERSION = '0.23'; # VERSION
+our $DATE = '2014-05-01'; # DATE
 
 
 use 5.010001;
@@ -153,7 +153,7 @@ Language::Expr - Simple minilanguage for use in expression
 
 =head1 VERSION
 
-This document describes version 0.22 of module Language::Expr (in distribution Language-Expr), released on 2014-04-28.
+This document describes version 0.23 of module Language::Expr (in distribution Language-Expr), released on 2014-05-01.
 
 =head1 SYNOPSIS
 
